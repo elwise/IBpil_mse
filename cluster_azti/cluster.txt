@@ -1,0 +1,34 @@
+
+# SIMULACIONES CLUSTER - COMANDOS PRINCIPALES
+
+# enter into the folder
+
+cd IBpil_mse_2021
+
+# create the folder qsub_out to save the checking outputs
+
+# run the simulations test (it saves the R capture)
+
+qsub -t 1:3 simsB_test.qsub    # Base case runs
+
+# Once the test runs ok, we run the simulations scenario by scenario
+# I have created an R script (02_pil_simulations_ss3.R) and a qsub file (sims01.qsub) for each scenario
+# so that I can send all the tasks at the same time
+
+qsub -t 1:1000 sims01.qsub    # Base case runs
+
+# Summarise the statistics by scenario
+qsub postsims.qsub
+
+# Consultar estado mis tareas
+qstat -u libaiba
+qstat -u '*'
+
+# Borrar tarea
+qdel NUMEROTASK
+
+# Alterar tarea
+# - Bajar la prioridad
+qalter -p -10 NUMEROTASK
+# - Limitar el numero de nodos usados a 100
+qalter -tc 100 NUMEROTASK
