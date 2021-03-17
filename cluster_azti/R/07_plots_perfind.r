@@ -21,7 +21,7 @@ rm(list=ls())
 # WORKING DIRECTORY                                                        ----
 #==============================================================================
 
-wd <- "C:/use/GitHub/FLBEIA_mseIBpil/" # main directory
+wd <- "D:/IPMA/SARDINE/ADVICE_MP/FLBEIA_mseIBpil/2020/cluster_azti/" # main directory
 setwd(wd)
 
 # directory with results
@@ -53,7 +53,7 @@ length(scenario_list)
 
 # load the reference points
 
-load(file.path(wd, "input", "PIL_refpts2018.RData"))
+load(file.path(wd, "input", "PIL_refpts2020.RData"))
 PIL_ref.pts
 
 #==============================================================================
@@ -62,7 +62,7 @@ PIL_ref.pts
 
 # load performance statistics for all the scenarios
 
-df <- read.table(file.path(res.dir,"stats2018.csv"), header=T, sep=";")
+df <- read.table(file.path(res.dir,"stats.csv"), header=T, sep=";")
 
 # reshape to the long format for ggplot
 
@@ -84,7 +84,7 @@ row.names(df) <- NULL
 perfnms <- unique(df$indicator)
 perflabels <- c( "P5th_B1plus","P10th_B1plus","Median_B1plus","P90th_B1plus","P95th_B1plus","Mean_B1plus","Median_lastB1plus",
                  "IAV1_B1plus","IAV2_B1plus",
-                 "P(B1+>=0.8Blim)","P(B1+>=0.8Blow)","First year B1plus>=0.8Blim","First year B1plus>=0.8Blow",
+                 #"P(B1+>=0.8Blim)","P(B1+>=0.8Blow)","First year B1plus>=0.8Blim","First year B1plus>=0.8Blow",
                  "P(B1+<Blim)","P(B1+<Blow)","P(once B1+<Blim)","P(once B1+<Blow)",
                  "max P(B1+<Blim)","max P(B1p+<Blow)",
                  "Nb years B1+<Blim", "Nb years to get B1plus>Blim", "First year B1plus>Blim",
@@ -322,7 +322,7 @@ df.scaled <- as.data.frame(df.scaled)
 
 # radar plot 
 
-for (rr in c("low","med","mix")){
+for (rr in c("low","lowmed","mix")){
   scnms <- scenario_list # names of scenarios to be compared
   scnms <- scenario_list[grep(paste("REC",rr,sep=""),scenario_list)] # names of scenarios to be compared
   for (cs in c("initial","short","last")){
@@ -353,7 +353,7 @@ scnms <- scenario_list # names of scenarios to be compared
 
 tiff(file.path(plot.dir,"example_radar.tif"), width=900, height=700)
 aux <- subset(df.scaled, period=="initial" & scenario %in% scnms & 
-                indicator %in% c("Mean_B1plus","Mean_Catch","IAV1_Catch","P_B1plus_0.8Blim","max_P_B1plus_Blim","max_P_B1plus_Blow"))
+                indicator %in% c("Mean_B1plus","Mean_Catch","IAV1_Catch","max_P_B1plus_Blim","max_P_B1plus_Blow"))
 aux <- aux[order(aux$indicator), ] 
 p <- ggplot(data=aux, aes(x=indicator, y=value2, col=scenario, fill=scenario, group=scenario))+
 #  geom_polygon(alpha=0.2, lwd=1)+
@@ -376,7 +376,7 @@ dev.off()
 
 # read data
 
-dfyr <- read.table(file.path(res.dir,"stats_byyr2018.csv"), header=T, sep=";")
+dfyr <- read.table(file.path(res.dir,"stats_byyr.csv"), header=T, sep=";")
 
 # reshape dat to the long format to use ggplot2
 
@@ -397,7 +397,7 @@ for (ind in unique(dfyr$indicator)){
   p <- ggplot(data=aux, aes(x=year, y=q50, color=scenario))+
     geom_line()+
     geom_ribbon(aes(x=year, ymin=q05, ymax=q95, fill=scenario), alpha=0.2)+
-    geom_vline(xintercept = 2018, linetype = "longdash")+
+    geom_vline(xintercept = 2020, linetype = "longdash")+
     theme_bw()+
     theme(text=element_text(size=10),
           title=element_text(size=10,face="bold"),
@@ -423,7 +423,7 @@ for (ind in unique(dfyr$indicator)){
   p <- ggplot(data=aux, aes(x=year, y=q50, color=scenario))+
     geom_line()+
     geom_ribbon(aes(x=year, ymin=q05, ymax=q95, fill=scenario), alpha=0.2)+
-    geom_vline(xintercept = 2018, linetype = "longdash")+
+    geom_vline(xintercept = 2020, linetype = "longdash")+
     theme_bw()+
     theme(text=element_text(size=10),
           title=element_text(size=10,face="bold"),
@@ -449,7 +449,7 @@ for (ind in unique(dfyr$indicator)){
   p <- ggplot(data=aux, aes(x=year, y=q50, color=scenario))+
     geom_line()+
     geom_ribbon(aes(x=year, ymin=q05, ymax=q95, fill=scenario), alpha=0.2)+
-    geom_vline(xintercept = 2018, linetype = "longdash")+
+    geom_vline(xintercept = 2020, linetype = "longdash")+
     theme_bw()+
     theme(text=element_text(size=10),
           title=element_text(size=10,face="bold"),
@@ -467,7 +467,7 @@ dev.off()
 
 # compare scenarios with assessment error for each SR 
 
-for (cs in c("low","med","mix")){
+for (cs in c("low","lowmed","mix")){
   scnms <- scenario_list[grep("ASSss3",scenario_list)] # names of scenarios to be compared
   scnms <- scenario_list[grep(paste("REC",cs,sep=""),scenario_list)] # names of scenarios to be compared
   pdf(file.path(plot.dir,paste("plots_series_indicators_ASSss3_REC",cs,".pdf",sep="")), width=10)
@@ -477,7 +477,7 @@ for (cs in c("low","med","mix")){
     p <- ggplot(data=aux, aes(x=year, y=q50, color=scenario))+
       geom_line()+
       geom_ribbon(aes(x=year, ymin=q05, ymax=q95, fill=scenario), alpha=0.2)+
-      geom_vline(xintercept = 2018, linetype = "longdash")+
+      geom_vline(xintercept = 2020, linetype = "longdash")+
       theme_bw()+
       theme(text=element_text(size=10),
             title=element_text(size=10,face="bold"),
@@ -496,7 +496,7 @@ for (cs in c("low","med","mix")){
 
 # compare scenarios with assessment error for each SR 
 
-for (cs in c(1,2,5,6)){
+for (cs in c(7:11,0)){
   scnms <- scenario_list[grep("ASSss3",scenario_list)] # names of scenarios to be compared
   scnms <- scenario_list[grep(paste("HCR",cs,sep=""),scenario_list)] # names of scenarios to be compared
   pdf(file.path(plot.dir,paste("plots_series_indicators_ASSss3_HCR",cs,".pdf",sep="")), width=10)
@@ -506,7 +506,7 @@ for (cs in c(1,2,5,6)){
     p <- ggplot(data=aux, aes(x=year, y=q50, color=scenario))+
       geom_line()+
       geom_ribbon(aes(x=year, ymin=q05, ymax=q95, fill=scenario), alpha=0.2)+
-      geom_vline(xintercept = 2018, linetype = "longdash")+
+      geom_vline(xintercept = 2020, linetype = "longdash")+
       theme_bw()+
       theme(text=element_text(size=10),
             title=element_text(size=10,face="bold"),
@@ -534,9 +534,9 @@ tiff(file.path(plot.dir,paste("plots_series_biomass.tif",sep="")), , width=900, 
     geom_line()+
     geom_ribbon(aes(x=year, ymin=q05, ymax=q95, fill=scenario), alpha=0.2)+
     geom_hline(yintercept = PIL_ref.pts["Blim"], linetype = "longdash")+
-    geom_hline(yintercept = 0.8*PIL_ref.pts["Blim"], linetype = "longdash")+
+    #geom_hline(yintercept = 0.8*PIL_ref.pts["Blim"], linetype = "longdash")+
     geom_hline(yintercept = PIL_ref.pts["Bloss"], linetype = "longdash")+
-    geom_vline(xintercept = 2018, linetype = "longdash")+
+    geom_vline(xintercept = 2020, linetype = "longdash")+
     theme_bw()+
     theme(text=element_text(size=14),
           title=element_text(size=14,face="bold"),
@@ -584,88 +584,13 @@ for (ind in unique(dfyr.rel$indicator)){
 }
 dev.off()
 
-#==============================================================================
-# Plots to see whether the conditions are met
-#==============================================================================
-
-# load library
-
-library(dplyr)
-
-# read data and compute pblim and p80blim by year
-
-successyr <- NULL
-for (scenario in scenario_list){
-  load(file.path(res.dir,"output_scenarios",paste("results2018_",scenario,".RData",sep="")))
-  aux <- out.bio %>% 
-          group_by(scenario, year) %>% 
-          summarize(pblim=sum(biomass>=337448)/length(biomass),
-                    p80blim=sum(biomass>= 0.8 * 337448)/length(biomass))
-  successyr <- rbind(successyr, as.data.frame(aux))
-}
-successyr <- subset(successyr, year>2018)
-
-pdf(file.path(plot.dir,paste("pblim_by_yr.pdf",sep="")), width=10)
-for (sc in scenario_list){
-  p <- ggplot(subset(successyr, scenario==sc), aes(x=year,y=pblim))+
-    geom_line()+
-    geom_hline(yintercept = 0.95, linetype = "longdash")+
-    ylim(c(0,1))+
-    theme(text=element_text(size=10),
-          title=element_text(size=10,face="bold"),
-          strip.text=element_text(size=10),
-          plot.title = element_text(hjust = 0.5))+
-    ylab("P(SSB>=Blim)")+
-    ggtitle(sc)
-  print(p)
-}
-p <- ggplot(successyr, aes(x=year,y=pblim, col=scenario))+
-  geom_line()+
-  geom_hline(yintercept = 0.95, linetype = "longdash")+
-  ylim(c(0,1))+
-  theme(text=element_text(size=10),
-        title=element_text(size=10,face="bold"),
-        strip.text=element_text(size=10),
-        plot.title = element_text(hjust = 0.5))+
-  ylab("P(SSB>=Blim)")+
-  ggtitle("")
-print(p)
-dev.off()
-
-
-pdf(file.path(plot.dir,paste("p80blim_by_yr.pdf",sep="")), width=10)
-for (sc in scenario_list){
-  p <- ggplot(subset(successyr, scenario==sc), aes(x=year,y=p80blim))+
-    geom_line()+
-    geom_hline(yintercept = 0.9, linetype = "longdash")+
-    ylim(c(0,1))+
-    theme(text=element_text(size=10),
-          title=element_text(size=10,face="bold"),
-          strip.text=element_text(size=10),
-          plot.title = element_text(hjust = 0.5))+
-    ylab("P(SSB>=0.8Blim)")+
-    ggtitle(sc)
-  print(p)
-}
-p <- ggplot(successyr, aes(x=year,y=p80blim, col=scenario))+
-  geom_line()+
-  geom_hline(yintercept = 0.90, linetype = "longdash")+
-  ylim(c(0,1))+
-  theme(text=element_text(size=10),
-        title=element_text(size=10,face="bold"),
-        strip.text=element_text(size=10),
-        plot.title = element_text(hjust = 0.5))+
-  ylab("P(SSB>=0.8Blim)")+
-  ggtitle("")
-print(p)
-dev.off()
 
 #==============================================================================
 # Calculate nbr pop that reach Blim and 'would stay in med regime' by yr                                                               ----
 #==============================================================================
 
 #subset for RECmix
-scenarios <- scenario_list[grep("RECmix",scenario_list)]
+scenarios <- scenario_list[grep("REClowmed",scenario_list)]
 
 #auxiliary function
 ff <- function(pop, threshold) {
@@ -676,8 +601,8 @@ ff <- function(pop, threshold) {
 nbrBlim <- NULL
 
 for (scenario in scenarios){
-  load(file.path(res.dir,"output_scenarios",paste("results2018_",scenario,".RData",sep="")))
-  aux <- subset(out.bio,year>2018)
+  load(file.path(res.dir,"scenarios",paste("results_",scenario,".RData",sep="")))
+  aux <- subset(out.bio,year>2020)
   yy <- lapply(split(aux, aux$iter), ff,threshold=337448)
   tt <-plyr::rbind.fill(yy)
   tt <- subset(tt,scenario == scenario)
