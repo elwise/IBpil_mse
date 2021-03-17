@@ -7,4 +7,4 @@
 # module add R
 echo Starting job $JOB_ID - task $SGE_TASK_ID
 echo ${SC}
-R CMD BATCH --no-save R/02_pil_simulations_ss3_24.R
+R CMD BATCH --no-save R/02_pil_simulations_ss3_34.R

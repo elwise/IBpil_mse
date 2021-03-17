@@ -68,7 +68,7 @@ pilHCRs <- function(stocks, advice, advice.ctrl, year, season, stknm,...){
   rule <- advice.ctrl[[stknm]]$rule
   
 
-  if (rule %in% c(0:10)) {
+  if (rule %in% c(0:11)) {
     
     stk <- window(stk, start=yrsnumbs[1], end=yrsnumbs[year-1]) #! CHECK WHEN ASSESSMENT USED
     
