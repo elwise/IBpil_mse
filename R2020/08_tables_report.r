@@ -26,7 +26,7 @@ wd <- "D:/IPMA/SARDINE/ADVICE_MP/FLBEIA_mseIBpil"
 setwd(wd)
 
 # directory with results
-res.dir  <- file.path("./output2020/")
+res.dir  <- file.path("./2020/output2020/")
 
 #==============================================================================
 # LOAD LIBRARIES AND FUNCTIONS                                             ----

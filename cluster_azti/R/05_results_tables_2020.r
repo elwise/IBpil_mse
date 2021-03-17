@@ -25,14 +25,11 @@ rm(list=ls())
 # WORKING DIRECTORY                                                        ----
 #==============================================================================
 
-#wd <- "C:/use/GitHub/FLBEIA_mseIBpil/" # main directory
-#wd <- "~/Documents/IPMA/SARDINE/ADVICE_MP/FLBEIA_mseIBpil"
-wd <- "D:/IPMA/SARDINE/ADVICE_MP/FLBEIA_mseIBpil"
+wd <- "D:/IPMA/SARDINE/ADVICE_MP/FLBEIA_mseIBpil/2020/cluster_azti/"
 setwd(wd)
 
 # directory with results
-#res.dir  <- file.path("./output")
-res.dir  <- file.path("./output2020")
+res.dir  <- file.path("./output")
 
 #==============================================================================
 # LOAD LIBRARIES AND FUNCTIONS                                             ----
@@ -71,45 +68,27 @@ load(file.path(res.dir, "scenario_list.RData"))
 proj.yr <- 2020
 qs <- c("q95","q50","q05")
 
-load(file.path(res.dir,"res_bio_all2020.RData"))    # dat.bio.q
+load(file.path(res.dir,"res_bio_all.RData"))    # dat.bio.q
 # dat.bio.q$stock <- NULL
 
-load( file.path(res.dir,"res_eco_all2020.RData"))    # dat.eco.q
+load( file.path(res.dir,"res_eco_all.RData"))    # dat.eco.q
+dat.eco.q$year <- dat.bio.q$year
 dat.eco.q <- dat.eco.q[,c("year","scenario",paste("effort",qs,sep="_"))]
 
-load( file.path(res.dir,"res_adv_all2020.RData"))    # dat.adv.q
+load( file.path(res.dir,"res_adv_all.RData"))    # dat.adv.q
 dat.adv.q <- dat.adv.q[,c("year","scenario",paste("tac",qs,sep="_"))]  #,paste("quotaUpt",qs,sep="_")
 
 out.byr <- merge(dat.bio.q, dat.eco.q, by=c("scenario","year"))
 out.byr <- merge(out.byr, dat.adv.q, by=c("scenario","year"))
 
-# Separate scenario into different columns
-out.byr$scenario <- plyr::mapvalues(out.byr$scenario,from= c("ASSnone_HCR8_REClowmed_INNvar_OERnonecatch40",
-                                                             "ASSnone_HCR8_REClowmed_INNvar_OERnonecatch45",
-                                                             "ASSnone_HCR8_REClowmed_INNvar_OERnonecatch50",
-                                                             "ASSss3_HCR8_REClowmed_INNvar_OERnaqcatch40"  ,
-                                                             "ASSss3_HCR8_REClowmed_INNvar_OERnaqcatch45",
-                                                             "ASSss3_HCR8_REClowmed_INNvar_OERnaqcatch50",
-                                                             "ASSnone_HCR8_REClow_INNvar_OERnone",
-                                                             "ASSss3_HCR8_REClow_INNvar_OERnaqcatch50",
-                                                             "ASSss3_HCR8_REClow_INNvar_OERnaqcatch45"),
-                                 to=c("ASSnone_HCR8_REClowmed_INNvar_OERnone_catch40",
-                                      "ASSnone_HCR8_REClowmed_INNvar_OERnone_catch45",
-                                      "ASSnone_HCR8_REClowmed_INNvar_OERnone_catch50",
-                                      "ASSss3_HCR8_REClowmed_INNvar_OERnaq_catch40" ,
-                                      "ASSss3_HCR8_REClowmed_INNvar_OERnaq_catch45",
-                                      "ASSss3_HCR8_REClowmed_INNvar_OERnaq_catch50",
-                                      "ASSnone_HCR8_REClow_INNvar_OERnone_catch50",
-                                      "ASSss3_HCR8_REClow_INNvar_OERnaq_catch50",
-                                      "ASSss3_HCR8_REClow_INNvar_OERnaq_catch45") )
 out <- out.byr %>%
-  separate(scenario, into = c("Ass", "Rule", "Rec", "INN", "OER","catch"), sep = "_",  remove=FALSE)
+  separate(scenario, into = c("Ass", "Rule", "Rec", "INN", "OER"), sep = "_",  remove=FALSE)
 
 
 out <- subset(out, year>=proj.yr)
 
 
-write.table( out, file=file.path(res.dir, "stats_byyr2020.csv"), dec = ".", sep = ";",
+write.table( out, file=file.path(res.dir, "stats_byyr.csv"), dec = ".", sep = ";",
              row.names = FALSE)
 rm( qs, dat.bio.q, dat.eco.q, dat.adv.q)
 
@@ -131,7 +110,7 @@ out.all5 <- NULL
 for (cs in scenario_list){
   
   obj <- perfInd.pil( obj.bio="out.bio",
-                      scenario=cs, file.dat=file.path(res.dir,"scenarios",paste("results2020_",cs,".RData",sep="")),
+                      scenario=cs, file.dat=file.path(res.dir,"scenarios",paste("results_",cs,".RData",sep="")),
                       proj.yrs=2021:2025, Blim=337448, Blow=196334)
   
   out.all5 <- rbind(out.all5, obj)
@@ -147,7 +126,7 @@ out.all10 <- NULL
 for (cs in scenario_list){
   
   obj <- perfInd.pil( obj.bio="out.bio", 
-                      scenario=cs, file.dat=file.path(res.dir,"scenarios",paste("results2020_",cs,".RData",sep="")),
+                      scenario=cs, file.dat=file.path(res.dir,"scenarios",paste("results_",cs,".RData",sep="")),
                       proj.yrs=2021:2030, Blim=337448, Blow=196334)
   
   out.all10 <- rbind(out.all10, obj)
@@ -163,7 +142,7 @@ out.all.last <- NULL
 for (cs in scenario_list){
   
   obj <- perfInd.pil( obj.bio="out.bio",  
-                      scenario=cs, file.dat=file.path(res.dir,"scenarios",paste("results2020_",cs,".RData",sep="")),
+                      scenario=cs, file.dat=file.path(res.dir,"scenarios",paste("results_",cs,".RData",sep="")),
                       proj.yrs=2061:2070, Blim=337448, Blow=196334)
   
   out.all.last <- rbind(out.all.last, obj)
@@ -180,7 +159,7 @@ out.all.all <- NULL
 for (cs in scenario_list){
   
   obj <- perfInd.pil( obj.bio="out.bio",  
-                      scenario=cs, file.dat=file.path(res.dir,"scenarios",paste("results2020_",cs,".RData",sep="")),
+                      scenario=cs, file.dat=file.path(res.dir,"scenarios",paste("results_",cs,".RData",sep="")),
                       proj.yrs=2021:2070, Blim=337448, Blow=196334)
   
   out.all.all <- rbind(out.all.all, obj)
@@ -195,26 +174,13 @@ out.all.all <- cbind(period=rep("all",dim(out.all.all)[1]), out.all.all)
 out.all <- rbind(out.all5, out.all10, out.all.last, out.all.all)
 
 # Separate scenario into different columns
-out.all$scenario <- plyr::mapvalues(out.all$scenario,from= c("ASSnone_HCR8_REClowmed_INNvar_OERnonecatch40",
-                                                             "ASSnone_HCR8_REClowmed_INNvar_OERnonecatch45",
-                                                             "ASSnone_HCR8_REClowmed_INNvar_OERnonecatch50",
-                                                             "ASSss3_HCR8_REClowmed_INNvar_OERnaqcatch40"  ,
-                                                             "ASSss3_HCR8_REClowmed_INNvar_OERnaqcatch45",
-                                                             "ASSss3_HCR8_REClowmed_INNvar_OERnaqcatch50"),
-                                    to=c("ASSnone_HCR8_REClowmed_INNvar_OERnone_catch40",
-                                         "ASSnone_HCR8_REClowmed_INNvar_OERnone_catch45",
-                                         "ASSnone_HCR8_REClowmed_INNvar_OERnone_catch50",
-                                         "ASSss3_HCR8_REClowmed_INNvar_OERnaq_catch40" ,
-                                         "ASSss3_HCR8_REClowmed_INNvar_OERnaq_catch45",
-                                         "ASSss3_HCR8_REClowmed_INNvar_OERnaq_catch50") )
-
 out.final <-
   out.all %>%
-  separate(scenario, into = c("Ass", "Rule", "Rec", "INN", "OER","catch"), sep = "_",  remove=FALSE)
+  separate(scenario, into = c("Ass", "Rule", "Rec", "INN", "OER"), sep = "_",  remove=FALSE)
 
 
 # Save data
-write.table( out.final, file=file.path(res.dir,"stats2020.csv"), dec = ".", sep = ";",
+write.table( out.final, file=file.path(res.dir,"stats.csv"), dec = ".", sep = ";",
              row.names = FALSE)
 rm( cs, obj, out.all5, out.all10, out.all.last, out.all.all, out.all, out.final)
 rm( perfInd.pil, auxiliary.f, tacdif)

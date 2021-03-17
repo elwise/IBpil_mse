@@ -32,7 +32,7 @@ setwd(wd)
 
 # directory with results
 #res.dir  <- file.path("./output")
-res.dir  <- file.path("./output2020")
+res.dir  <- file.path("./2020/output2020")
 
 #==============================================================================
 # LOAD LIBRARIES AND FUNCTIONS                                             ----
@@ -84,24 +84,16 @@ out.byr <- merge(dat.bio.q, dat.eco.q, by=c("scenario","year"))
 out.byr <- merge(out.byr, dat.adv.q, by=c("scenario","year"))
 
 # Separate scenario into different columns
-out.byr$scenario <- plyr::mapvalues(out.byr$scenario,from= c("ASSnone_HCR8_REClowmed_INNvar_OERnonecatch40",
-                                                             "ASSnone_HCR8_REClowmed_INNvar_OERnonecatch45",
-                                                             "ASSnone_HCR8_REClowmed_INNvar_OERnonecatch50",
-                                                             "ASSss3_HCR8_REClowmed_INNvar_OERnaqcatch40"  ,
-                                                             "ASSss3_HCR8_REClowmed_INNvar_OERnaqcatch45",
-                                                             "ASSss3_HCR8_REClowmed_INNvar_OERnaqcatch50",
-                                                             "ASSnone_HCR8_REClow_INNvar_OERnone",
-                                                             "ASSss3_HCR8_REClow_INNvar_OERnaqcatch50",
-                                                             "ASSss3_HCR8_REClow_INNvar_OERnaqcatch45"),
-                                 to=c("ASSnone_HCR8_REClowmed_INNvar_OERnone_catch40",
-                                      "ASSnone_HCR8_REClowmed_INNvar_OERnone_catch45",
-                                      "ASSnone_HCR8_REClowmed_INNvar_OERnone_catch50",
-                                      "ASSss3_HCR8_REClowmed_INNvar_OERnaq_catch40" ,
-                                      "ASSss3_HCR8_REClowmed_INNvar_OERnaq_catch45",
-                                      "ASSss3_HCR8_REClowmed_INNvar_OERnaq_catch50",
-                                      "ASSnone_HCR8_REClow_INNvar_OERnone_catch50",
-                                      "ASSss3_HCR8_REClow_INNvar_OERnaq_catch50",
-                                      "ASSss3_HCR8_REClow_INNvar_OERnaq_catch45") )
+out.byr$scenario <- plyr::mapvalues(out.byr$scenario,from= c("ASSnone_HCR8_REClowmed_INNvar_OERnonecatch40", "ASSnone_HCR8_REClowmed_INNvar_OERnonecatch45",
+                                                             "ASSnone_HCR8_REClowmed_INNvar_OERnonecatch50", "ASSnone_HCR8_RECmix_INNvar_OERnonecatch50"   ,
+                                                             "ASSss3_HCR8_REClow_INNvar_OERnaqcatch40"    ,  "ASSss3_HCR8_REClow_INNvar_OERnaqcatch45"     ,
+                                                             "ASSss3_HCR8_REClow_INNvar_OERnaqcatch50"    ,  "ASSss3_HCR8_REClowmed_INNvar_OERnaqcatch40"  ,
+                                                             "ASSss3_HCR8_REClowmed_INNvar_OERnaqcatch45" ,  "ASSss3_HCR8_REClowmed_INNvar_OERnaqcatch50"  ),
+                                 to=c("ASSnone_HCR8_REClowmed_INNvar_OERnone_catch40" ,"ASSnone_HCR8_REClowmed_INNvar_OERnone_catch45",
+                                      "ASSnone_HCR8_REClowmed_INNvar_OERnone_catch50" ,"ASSnone_HCR8_RECmix_INNvar_OERnone_catch50" ,  
+                                      "ASSss3_HCR8_REClow_INNvar_OERnaq_catch40"   ,   "ASSss3_HCR8_REClow_INNvar_OERnaq_catch45"   ,  
+                                      "ASSss3_HCR8_REClow_INNvar_OERnaq_catch50"    ,  "ASSss3_HCR8_REClowmed_INNvar_OERnaq_catch40" , 
+                                      "ASSss3_HCR8_REClowmed_INNvar_OERnaq_catch45"  , "ASSss3_HCR8_REClowmed_INNvar_OERnaq_catch50"  ) )
 out <- out.byr %>%
   separate(scenario, into = c("Ass", "Rule", "Rec", "INN", "OER","catch"), sep = "_",  remove=FALSE)
 
@@ -195,18 +187,16 @@ out.all.all <- cbind(period=rep("all",dim(out.all.all)[1]), out.all.all)
 out.all <- rbind(out.all5, out.all10, out.all.last, out.all.all)
 
 # Separate scenario into different columns
-out.all$scenario <- plyr::mapvalues(out.all$scenario,from= c("ASSnone_HCR8_REClowmed_INNvar_OERnonecatch40",
-                                                             "ASSnone_HCR8_REClowmed_INNvar_OERnonecatch45",
-                                                             "ASSnone_HCR8_REClowmed_INNvar_OERnonecatch50",
-                                                             "ASSss3_HCR8_REClowmed_INNvar_OERnaqcatch40"  ,
-                                                             "ASSss3_HCR8_REClowmed_INNvar_OERnaqcatch45",
-                                                             "ASSss3_HCR8_REClowmed_INNvar_OERnaqcatch50"),
-                                    to=c("ASSnone_HCR8_REClowmed_INNvar_OERnone_catch40",
-                                         "ASSnone_HCR8_REClowmed_INNvar_OERnone_catch45",
-                                         "ASSnone_HCR8_REClowmed_INNvar_OERnone_catch50",
-                                         "ASSss3_HCR8_REClowmed_INNvar_OERnaq_catch40" ,
-                                         "ASSss3_HCR8_REClowmed_INNvar_OERnaq_catch45",
-                                         "ASSss3_HCR8_REClowmed_INNvar_OERnaq_catch50") )
+out.all$scenario <- plyr::mapvalues(out.all$scenario,from= c("ASSnone_HCR8_REClowmed_INNvar_OERnonecatch40", "ASSnone_HCR8_REClowmed_INNvar_OERnonecatch45",
+                                                             "ASSnone_HCR8_REClowmed_INNvar_OERnonecatch50", "ASSnone_HCR8_RECmix_INNvar_OERnonecatch50"   ,
+                                                             "ASSss3_HCR8_REClow_INNvar_OERnaqcatch40"    ,  "ASSss3_HCR8_REClow_INNvar_OERnaqcatch45"     ,
+                                                             "ASSss3_HCR8_REClow_INNvar_OERnaqcatch50"    ,  "ASSss3_HCR8_REClowmed_INNvar_OERnaqcatch40"  ,
+                                                             "ASSss3_HCR8_REClowmed_INNvar_OERnaqcatch45" ,  "ASSss3_HCR8_REClowmed_INNvar_OERnaqcatch50"  ),
+                                    to=c("ASSnone_HCR8_REClowmed_INNvar_OERnone_catch40" ,"ASSnone_HCR8_REClowmed_INNvar_OERnone_catch45",
+                                         "ASSnone_HCR8_REClowmed_INNvar_OERnone_catch50" ,"ASSnone_HCR8_RECmix_INNvar_OERnone_catch50" ,  
+                                         "ASSss3_HCR8_REClow_INNvar_OERnaq_catch40"   ,   "ASSss3_HCR8_REClow_INNvar_OERnaq_catch45"   ,  
+                                         "ASSss3_HCR8_REClow_INNvar_OERnaq_catch50"    ,  "ASSss3_HCR8_REClowmed_INNvar_OERnaq_catch40" , 
+                                         "ASSss3_HCR8_REClowmed_INNvar_OERnaq_catch45"  , "ASSss3_HCR8_REClowmed_INNvar_OERnaq_catch50"  ))
 
 out.final <-
   out.all %>%

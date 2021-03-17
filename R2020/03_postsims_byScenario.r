@@ -98,8 +98,8 @@ for (cs in scenario_list){
   
   for (i in 1:ni){ #1:ni
     print(paste("     iter",i))
-    if (file.exists(file.path(res.dir, "output_iters45", paste("out2020_",cs,"_catch45_",i,".RData",sep="")))){
-      load(file.path(res.dir, "output_iters45", paste("out2020_",cs,"_catch45_",i,".RData",sep="")))
+    if (file.exists(file.path(res.dir, "output_iters50", paste("out2020_",cs,"_catch50_",i,".RData",sep="")))){
+      load(file.path(res.dir, "output_iters50", paste("out2020_",cs,"_catch50_",i,".RData",sep="")))
       
       rm(list=cs)
       # steps:
@@ -140,14 +140,14 @@ for (cs in scenario_list){
       
       rm(list=ls()[grep( cs, ls(), fixed=TRUE)])
       
-    } else stop("Missing file:", file.path(res.dir, "output_iters45", paste("out2020_",cs,"_catch45_",i,".RData",sep="")))
+    } else stop("Missing file:", file.path(res.dir, "output_iters50", paste("out2020_",cs,"_catch50_",i,".RData",sep="")))
   }
   
   
   # save results in external files
   
   save( out.bio, out.flt, out.adv, out.risk, #out.fltstk, 
-        file=file.path(res.dir, "scenarios", paste("results2020_",cs,"_catch45.RData",sep="")))
+        file=file.path(res.dir, "scenarios", paste("results2020_",cs,"catch50.RData",sep="")))
 }
 
 print(Sys.time())

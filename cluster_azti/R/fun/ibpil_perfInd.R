@@ -23,7 +23,7 @@ perfInd.pil <- function( obj.bio="out.bio",scenario, file.dat,
                          proj.yrs=proj.yrs, Blim=337448, Blow=196334) {
   
   # biological data
-  xx <- loadToEnv(file.dat)[[obj.bio]]
+  xx <- as.data.frame(loadToEnv(file.dat)[[obj.bio]])
   xx$stock <- NULL
   
   
@@ -38,7 +38,7 @@ perfInd.pil <- function( obj.bio="out.bio",scenario, file.dat,
   nit <- length(it)
   yrnms <- proj.yrs
   nyr <- length(yrnms)
-  mp_yr <- 2023
+  #mp_yr <- 2023
 
   
   # # initialise vector for output
@@ -59,24 +59,24 @@ perfInd.pil <- function( obj.bio="out.bio",scenario, file.dat,
   out <- c(out, apply(matrix(unlist(tapply( xx[,'ssb'], list(xx$iter), tacdif) ), nrow=nit, byrow=T), 2, mean))
   
   # MP Success: P(SSB > 0.8*Blim) in the year 2023
-  p08Blim <- ifelse( xx[xx$year==mp_yr,'ssb'] >= 0.8*Blim, 1, 0)
-  tmp <-  sum(p08Blim) / nit
-  out <- c(out, tmp)
+  #p08Blim <- ifelse( xx[xx$year==mp_yr,'ssb'] >= 0.8*Blim, 1, 0)
+  #tmp <-  sum(p08Blim) / nit
+  #out <- c(out, tmp)
   
   # MP Success_Low: P(SSB > 0.8*Blow) in the year 2023
-  p08Blow <- ifelse( xx[xx$year==mp_yr,'ssb'] >= 0.8*Blow, 1, 0)
-  tmp <-  sum(p08Blow) / nit
-  out <- c(out, tmp)
+  #p08Blow <- ifelse( xx[xx$year==mp_yr,'ssb'] >= 0.8*Blow, 1, 0)
+  #tmp <-  sum(p08Blow) / nit
+  #out <- c(out, tmp)
   
   # First year necessary to get SSB >= 0.8Blim with prob 0.9
-  yrs.MP <- which(ifelse((tapply( ifelse( xx[,'ssb'] >= 0.8*Blim, 1, 0), list(xx$year), mean))>=0.90,1,0)==1)[1]
-  tmp <- proj.yrs[yrs.MP]
-  out <- c(out, tmp)
+  #yrs.MP <- which(ifelse((tapply( ifelse( xx[,'ssb'] >= 0.8*Blim, 1, 0), list(xx$year), mean))>=0.90,1,0)==1)[1]
+  #tmp <- proj.yrs[yrs.MP]
+  #out <- c(out, tmp)
   
   # First year necessary to get SSB >= 0.8Blow with prob 0.9
-  yrs.MP_Low <- which(ifelse((tapply( ifelse( xx[,'ssb'] >= 0.8*Blow, 1, 0), list(xx$year), mean))>=0.90,1,0)==1)[1]
-  tmp <- proj.yrs[yrs.MP_Low]
-  out <- c(out, tmp)
+  #yrs.MP_Low <- which(ifelse((tapply( ifelse( xx[,'ssb'] >= 0.8*Blow, 1, 0), list(xx$year), mean))>=0.90,1,0)==1)[1]
+  #tmp <- proj.yrs[yrs.MP_Low]
+  #out <- c(out, tmp)
   
   # # Risk 1: P(SSB < Blim)
   pBlim <- ifelse( xx[,'ssb'] < Blim, 1, 0)
@@ -164,7 +164,7 @@ perfInd.pil <- function( obj.bio="out.bio",scenario, file.dat,
   
   names(out) <- c( "P5th_B1plus","P10th_B1plus","Median_B1plus","P90th_B1plus","P95th_B1plus","Mean_B1plus","Median_lastB1plus",
                    "IAV1_B1plus","IAV2_B1plus",
-                   "P_B1plus_0.8Blim","P_B1plus_0.8Blow","firstyear_B1plus_0.8Blim","firstyear_B1plus_0.8Blow",
+                   #"P_B1plus_0.8Blim","P_B1plus_0.8Blow","firstyear_B1plus_0.8Blim","firstyear_B1plus_0.8Blow",
                    "avg_P_B1plus_Blim","avg_P_B1plus_Blow","once_P_B1plus_Blim","once_P_B1plus_Blow",
                    "max_P_B1plus_Blim","max_P_B1plus_Blow",
                    "years_B1plus_under_Blim", "years_get_B1plus_up_Blim","firstyear_B1plus_Blim",

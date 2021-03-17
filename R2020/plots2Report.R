@@ -12,7 +12,7 @@ wd <- "D:/IPMA/SARDINE/ADVICE_MP/FLBEIA_mseIBpil/" # main directory
 setwd(wd)
 
 # directory with results
-res.dir  <- file.path("./output2020")
+res.dir  <- file.path("./2020/output2020")
 # directory with plots
 plot.dir <- file.path(res.dir,"plots")
 
@@ -100,7 +100,7 @@ ggplot(data=aux.rule,aes(x = year, y = ss3_relbias,colour=catch)) +
   scale_x_continuous(name="Year",breaks = seq(2020,2070,5))+
   facet_grid(indicator2~.,scales="free",labeller = as_labeller(facet_names))+
   
-ggsave("HCRrel.png",path=plot.dir)
+ggsave("HCRrelLowMed.png",path=plot.dir)
 
 
 # ############
@@ -227,16 +227,16 @@ for (cs in scenario_list){
   
 }
 
-out.all$scenario <- plyr::mapvalues(out.all$scenario,from= c("ASSnone_HCR8_REClowmed_INNvar_OERnonecatch40",
-                                                             "ASSnone_HCR8_REClowmed_INNvar_OERnonecatch45",
-                                                             "ASSss3_HCR8_REClowmed_INNvar_OERnaqcatch40"  ,
-                                                             "ASSss3_HCR8_REClowmed_INNvar_OERnaqcatch45",
-                                                             "ASSss3_HCR8_REClowmed_INNvar_OERnaqcatch50"),
-                                    to=c("ASSnone_HCR8_REClowmed_INNvar_OERnone_catch40",
-                                         "ASSnone_HCR8_REClowmed_INNvar_OERnone_catch45",
-                                         "ASSss3_HCR8_REClowmed_INNvar_OERnaq_catch40" ,
-                                         "ASSss3_HCR8_REClowmed_INNvar_OERnaq_catch45",
-                                         "ASSss3_HCR8_REClowmed_INNvar_OERnaq_catch50") )
+out.all$scenario <- plyr::mapvalues(out.all$scenario,from= c("ASSnone_HCR8_REClowmed_INNvar_OERnonecatch40", "ASSnone_HCR8_REClowmed_INNvar_OERnonecatch45",
+                                                             "ASSnone_HCR8_REClowmed_INNvar_OERnonecatch50", "ASSnone_HCR8_RECmix_INNvar_OERnonecatch50"   ,
+                                                             "ASSss3_HCR8_REClow_INNvar_OERnaqcatch40"    ,  "ASSss3_HCR8_REClow_INNvar_OERnaqcatch45"     ,
+                                                             "ASSss3_HCR8_REClow_INNvar_OERnaqcatch50"    ,  "ASSss3_HCR8_REClowmed_INNvar_OERnaqcatch40"  ,
+                                                             "ASSss3_HCR8_REClowmed_INNvar_OERnaqcatch45" ,  "ASSss3_HCR8_REClowmed_INNvar_OERnaqcatch50"  ),
+                                    to=c("ASSnone_HCR8_REClowmed_INNvar_OERnone_catch40" ,"ASSnone_HCR8_REClowmed_INNvar_OERnone_catch45",
+                                         "ASSnone_HCR8_REClowmed_INNvar_OERnone_catch50" ,"ASSnone_HCR8_RECmix_INNvar_OERnone_catch50" ,  
+                                         "ASSss3_HCR8_REClow_INNvar_OERnaq_catch40"   ,   "ASSss3_HCR8_REClow_INNvar_OERnaq_catch45"   ,  
+                                         "ASSss3_HCR8_REClow_INNvar_OERnaq_catch50"    ,  "ASSss3_HCR8_REClowmed_INNvar_OERnaq_catch40" , 
+                                         "ASSss3_HCR8_REClowmed_INNvar_OERnaq_catch45"  , "ASSss3_HCR8_REClowmed_INNvar_OERnaq_catch50"  ) )
 
 
 
@@ -286,9 +286,12 @@ for (rr in c("REClow","REClowmed","RECmix")){
 gg <- subset(ww, Ass=="ASSss3")
 aa <- subset(out.iters, Ass=="ASSss3")
 
-for (rr in c("catch40","catch45","catch50")){
-  aux <- subset(gg,catch==rr)
-  aux.iters <- subset(aa,catch==rr)
+for (rr in c("REClow","REClowmed","RECmix")){
+  dd <- subset(gg, Rec==rr)
+  aa <- subset(aa, Rec==rr)
+for (cc in c("catch40","catch45","catch50")){
+  aux <- subset(dd,catch==cc)
+  aux.iters <- subset(aa,catch==cc)
   p <- ggplot(data=aux,aes(x=year, y=q50))+
     geom_ribbon(data=aux,aes(ymin = q05, ymax = q95),alpha=0.2,show.legend = F,fill="#F9840044") +
     geom_line(data=aux,color="#F98400")+
@@ -297,16 +300,16 @@ for (rr in c("catch40","catch45","catch50")){
     facet_grid(indicator2~.,scales="free")+
     geom_vline(xintercept = 2020, linetype = "dotted",color="#00A08A")+
     ylab("") +
-    scale_x_continuous(name="Ano",breaks = seq(1978,2070,5))+
+    scale_x_continuous(name="Year",breaks = seq(1978,2070,5))+
     scale_y_continuous(breaks=scales::pretty_breaks(n = 6))
   
   
   p + geom_hline(aes(yintercept = 337.448), data = subset(ww, indicator2=="ssb"),linetype="dashed",color="#00A08A") +
     geom_hline(aes(yintercept = 196.334), data = subset(ww,indicator2=="ssb"),linetype="dashed",color="#00A08A")
   
-  ggsave(paste0(rr,"_HCR_ss3.png"),path=plot.dir)
+  ggsave(paste0(rr,cc,"_HCR_ss3.png"),path=plot.dir)
 }
-
+}
 #######################
 ###Boxplots by year###
 ######################

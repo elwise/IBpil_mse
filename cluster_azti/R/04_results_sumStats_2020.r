@@ -28,12 +28,11 @@ t1 <- Sys.time()
 # WORKING DIRECTORY                                                        ----
 #==============================================================================
 
-wd <- "D:/IPMA/SARDINE/ADVICE_MP/FLBEIA_mseIBpil"
+wd <- "D:/IPMA/SARDINE/ADVICE_MP/FLBEIA_mseIBpil/2020/cluster_azti/"
 setwd(wd)
 
 # directory with results
-#res.dir <- file.path("./output")
-res.dir  <- file.path("./output2020")
+res.dir <- file.path("./output")
 #==============================================================================
 # LOAD LIBRARIES AND FUNCTIONS                                             ----
 #==============================================================================
@@ -72,7 +71,7 @@ dat.bio.q <- data.frame()
 for (cs in scenario_list){
   
   # load file
-  obj <- loadToEnv( file.path(res.dir,"scenarios",paste("results2020_",cs,".RData",sep="")))[["out.bio"]]
+  obj <- loadToEnv( file.path(res.dir,"scenarios",paste("results_",cs,".RData",sep="")))[["out.bio"]]
   
   obj$scenario <- as.character(cs)
   # combine all cases
@@ -98,7 +97,7 @@ dat.bio.q <- dat.bio.q %>%separate(scenario, into = c("Ass", "Rule", "Rec", "INN
 dat.bio.q <- dat.bio.q[,-1]
 
 # Save data
-save( dat.bio.q, file=file.path(res.dir,"res_bio_all2020.RData"))
+save( dat.bio.q, file=file.path(res.dir,"res_bio_all.RData"))
 rm( cs, dat.bio.q)
 
 
@@ -110,7 +109,7 @@ dat.eco.q <- data.frame()
 for (cs in scenario_list){
   
   # load file
-  obj <- loadToEnv( file.path(res.dir,"scenarios",paste("results2020_",cs,".RData",sep="")))[["out.flt"]]
+  obj <- loadToEnv( file.path(res.dir,"scenarios",paste("results_",cs,".RData",sep="")))[["out.flt"]]
   obj$scenario <- as.character(cs)
   # combine all cases
   dat.eco.q <- rbind( dat.eco.q, fltSumQ(obj))
@@ -135,7 +134,7 @@ dat.eco.q <- dat.eco.q %>%separate(scenario, into = c("Ass", "Rule", "Rec", "INN
 dat.eco.q <- dat.eco.q[,-1]
 
 # Save data
-save( dat.eco.q, file=file.path(res.dir,"res_eco_all2020.RData"))
+save( dat.eco.q, file=file.path(res.dir,"res_eco_all.RData"))
 rm( cs, dat.eco.q)
 
 
@@ -147,7 +146,7 @@ dat.adv.q <- data.frame()
 for (cs in scenario_list){
   
   # load file
-  obj <- loadToEnv( file.path(res.dir,"scenarios",paste("results2020_",cs,".RData",sep="")))[["out.adv"]]
+  obj <- loadToEnv( file.path(res.dir,"scenarios",paste("results_",cs,".RData",sep="")))[["out.adv"]]
   obj$scenario <- as.character(cs)
   # combine all cases
   dat.adv.q <- rbind( dat.adv.q, advSumQ(obj))
@@ -172,7 +171,7 @@ dat.adv.q <- dat.adv.q %>%separate(scenario, into = c("Ass", "Rule", "Rec", "INN
 dat.adv.q <- dat.adv.q[,-1]
 
 # Save data
-save( dat.adv.q, file=file.path(res.dir,"res_adv_all2020.RData"))
+save( dat.adv.q, file=file.path(res.dir,"res_adv_all.RData"))
 rm( cs, dat.adv.q)
 
 
