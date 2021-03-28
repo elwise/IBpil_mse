@@ -73,6 +73,9 @@ df <- reshape(df, idvar=c("period","scenario","Ass","Rule","Rec","INN","OER"), v
 
 df$period <- factor(df$period, levels=c("initial","short","last","all"))
 
+#Rule as an ordered factor for the figures
+df$Rule <- factor(df$Rule, levels=c("HCR8", "HCR9", "HCR10","HCR7", "HCR0", "HCR11"))
+
 row.names(df) <- NULL
 
 #==============================================================================
@@ -84,7 +87,6 @@ row.names(df) <- NULL
 perfnms <- unique(df$indicator)
 perflabels <- c( "P5th_B1plus","P10th_B1plus","Median_B1plus","P90th_B1plus","P95th_B1plus","Mean_B1plus","Median_lastB1plus",
                  "IAV1_B1plus","IAV2_B1plus",
-                 #"P(B1+>=0.8Blim)","P(B1+>=0.8Blow)","First year B1plus>=0.8Blim","First year B1plus>=0.8Blow",
                  "P(B1+<Blim)","P(B1+<Blow)","P(once B1+<Blim)","P(once B1+<Blow)",
                  "max P(B1+<Blim)","max P(B1p+<Blow)",
                  "Nb years B1+<Blim", "Nb years to get B1plus>Blim", "First year B1plus>Blim",
@@ -101,18 +103,22 @@ pdf(file.path(plot.dir,"plot_compare_by_periods.pdf"), onefile=T)
 for (i in 1:length(perfnms)){
   ind <- perfnms[i]
   aux <- subset(df, indicator %in% ind)
+  if(ind %in% c("avg_P_B1plus_Blim","max_P_B1plus_Blim", "once_P_B1plus_Blim", "years_B1plus_under_Blim","years_get_B1plus_up_Blim", "firstyear_B1plus_Blim")){
+    aux <- subset(aux, Rec!="REClow")
+  }
+  
+  if(ind %in% c("avg_P_B1plus_Blow", "max_P_B1plus_Blow", "once_P_B1plus_Blow", "years_B1plus_under_Blow","years_get_B1plus_up_Blow", "firstyear_B1plus_Blow")){
+    aux <- subset(aux, Rec=="REClow")
+  }
   p <- ggplot(aux, aes(x=period, y=value, fill=period))+
     geom_bar(stat="identity")+
     facet_grid(Ass + Rule ~ Rec)+
     ylab(perflabels[i])
-  if(length(grep("Risk", ind))>0){
+  if(ind %in% c("avg_P_B1plus_Blim","avg_P_B1plus_Blow","once_P_B1plus_Blim","once_P_B1plus_Blow",
+                "max_P_B1plus_Blim","max_P_B1plus_Blow")){
     p <- p + geom_hline(yintercept = 0.05, linetype = "longdash")
-    p <- ylim(c(0,1)) 
-  }
-  if(ind %in% c("P_B1plus_0.8Blim","P_B1plus_0.8Blow")){
-    p <- p + geom_hline(yintercept = 0.9, linetype = "longdash")
     p <- p + ylim(c(0,1)) 
-  }  
+  }
   if(ind %in% c("closure","closure_once")){
     p <- p + ylim(c(0,1)) 
   }  
@@ -123,6 +129,7 @@ for (i in 1:length(perfnms)){
 }
 dev.off()
 
+# start here
 # comparison of rules for each SR case
 
 pdf(file.path(plot.dir,"plot_compare_rule_initial.pdf"), onefile=T)

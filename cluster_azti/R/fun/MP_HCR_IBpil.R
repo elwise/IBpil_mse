@@ -68,7 +68,7 @@ pilHCRs <- function(stocks, advice, advice.ctrl, year, season, stknm,...){
   rule <- advice.ctrl[[stknm]]$rule
   
 
-  if (rule %in% c(0:11)) {
+  if (rule %in% c(0:12)) {
     
     stk <- window(stk, start=yrsnumbs[1], end=yrsnumbs[year-1]) #! CHECK WHEN ASSESSMENT USED
     
@@ -338,7 +338,12 @@ pilHCRs <- function(stocks, advice, advice.ctrl, year, season, stknm,...){
       Ftg   <- ifelse(b.pos == 0, 0, ifelse(b.pos == 1, ref.pts['Fmsy',]*b.datyr/ref.pts[ 'Bmsy',], ref.pts['Fmsy',]))
       
       
-    }  
+    } else if (rule == 12) { # HCR12: contant fishing
+      
+      
+      Ftg <- rep(ref.pts['Flim',],iter)  
+      
+    }
         
       # Fill the 0-s and NA-s with almost 0 values to avoid problems when the fishery is closed for example, or there is no catch...
       stk@harvest[stk@harvest < 0] <- 0.00001

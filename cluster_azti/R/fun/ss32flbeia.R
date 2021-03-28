@@ -34,10 +34,11 @@ ss32flbeia<-function(stock,indices,control,covars=covars){
 
   #directory where the folder with the reference ss3 assessment is located
   assess_dir<-control$assess_dir
-  
+
   # get current working directory
   dir0<-getwd()
   
+
   #set the new working directory 
   #assess_dir<-"C:\\Leire\\Sardina\\WGHANSA2018\\ss3R\\"
   setwd(assess_dir)
@@ -54,6 +55,8 @@ ss32flbeia<-function(stock,indices,control,covars=covars){
   #the reference assessment is always kept
   #temp_dir<-paste0(assess_dir,paste0(dir,paste0("/",ref_name)))
   temp_dir<-paste0(dir,paste0("/",ref_name))
+  
+
   setwd(temp_dir)
 
   
@@ -248,6 +251,7 @@ ss32flbeia<-function(stock,indices,control,covars=covars){
   #######################
   ###delete files
   #######################
+  #setwd(paste0(dir0, assess_dir, sep = "/")) #to run in Laura's pc
   setwd(assess_dir)
   unlink(paste0(assess_dir,dir),recursive=T)
   #return to the original working directory
