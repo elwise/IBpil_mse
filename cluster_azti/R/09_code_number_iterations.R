@@ -62,7 +62,10 @@ maxiter <- 10000
 out.boot <- NULL
 for (sc in scenario.list){
   out.bio <- loadToEnv(file.path("..","output_long","scenarios",sc))[["out.bio"]]
-  #for (size in seq(500,10000,by=500)){
+  rsc <- sub(pattern=".*REC *(.*?) *_INN.*", replacement="\\1", x=sc) # extract the recruitment scenario if needed
+
+  # use always the same Blim? include two Blim values in the ff function?
+  
   for (size in seq(500,10000,by=500)){
       tmp <- sapply(1:1000, FUN=ff, out.bio=out.bio, size=size, proj.yrs=2021:2030, Blim=337448)
     out.boot <- rbind(out.boot, data.frame(unique(out.bio$scenario), size, t(tmp)))
@@ -81,7 +84,7 @@ out.boot <- out.boot %>%
 
 # save the file
 
-save(out.boot, file=file.path("..","output_long","scenarios","out.boot1.RData"))
+save(out.boot, file=file.path("..","output_long","out.boot1.RData"))
 
 # compute median risk for the maximum sampling size (we will assume this is our "best" guess)
 
