@@ -1,9 +1,23 @@
+# Script information ------------------------------------------------------
 
-dat <- load(file.path("output_long","scenarios","results_ASSnone_HCR0_REClow_INNvar_OERnone.RData"))
+# Title: Sensitivity of MSE risk performance indicators in the case 
+# Authors: Leire Ibaibarriaga (libaibarriaga@azti.es) 
 
+# Load libraries ----------------------------------------------------------
 
+library(tidyverse)
 
-ff <- function(k, out.bio, size=100, proj.yrs=2021:2030, Blim=337448, Blow=196334){
+theme_set(theme_bw(base_size = 14))
+
+# Ad-hoc function to compute risk for a random subsample ------------------
+
+# k: identifier for the sample, that sets the seed
+# out.bio: summary object of bioSum
+# size: sample size
+# proj.yrs: years to compute the sample size
+# Blim: Blim
+
+ff <- function(k, out.bio, size=100, proj.yrs=2021:2030, Blim=337448){
   set.seed(k)
   samples.iter <- sample(x=unique(out.bio$iter), size=size, replace=T)
   xx <- subset(out.bio, iter %in% samples.iter)
@@ -33,38 +47,91 @@ ff <- function(k, out.bio, size=100, proj.yrs=2021:2030, Blim=337448, Blow=19633
   out
 }  
 
+# List of scenarios with 10000 iterations ---------------------------------
+
+scenario.list <- list.files(file.path("..","output_long","scenarios")) 
+
+# Risk depending on the number of iterations ------------------------------
+
+#maximum number of iterations
+
+maxiter <- 10000
+
+# bootstrap with different sampling size for each scenario
+
 out.boot <- NULL
-for (size in seq(100,1000,by=100)){
-  tmp <- sapply(1:1000, FUN=ff, out.bio=out.bio, size=size, proj.yrs=2021:2030, Blim=337448, Blow=196334)
-  out.boot <- rbind(out.boot, cbind(size, t(tmp)))
+for (sc in scenario.list){
+  out.bio <- loadToEnv(file.path("..","output_long","scenarios",sc))[["out.bio"]]
+  #for (size in seq(500,10000,by=500)){
+  for (size in seq(500,10000,by=500)){
+      tmp <- sapply(1:1000, FUN=ff, out.bio=out.bio, size=size, proj.yrs=2021:2030, Blim=337448)
+    out.boot <- rbind(out.boot, data.frame(unique(out.bio$scenario), size, t(tmp)))
+  }
 }
-out.boot <- as.data.frame(out.boot)
-names(out.boot) <- c("Size", "Risk1", "Risk2", "Risk3")
+# out.boot <- as.data.frame(out.boot)
+names(out.boot) <- c("scenario","size", "risk1", "risk2", "risk3")
 
-library(tidyr)
+# from wide to long format for plotting
+
 out.boot <- out.boot %>% 
-  pivot_longer(cols=starts_with("Risk"),
-               names_to = "Risk",
-               names_prefix = "Risk", 
-               values_to="Value")
-  
+  pivot_longer(cols=starts_with("risk"),
+               names_to = "risk",
+               names_prefix = "risk", 
+               values_to="value")
 
+# save the file
 
-med <- out.boot %>% 
-  filter(Size==1000) %>% 
-  group_by(Risk) %>% 
-  summarise(Med=median(Value))
-  
-library(ggplot2)
+save(out.boot, file=file.path("..","output_long","scenarios","out.boot1.RData"))
 
-p <- ggplot(out.boot, aes(Size, Value))+
-  geom_point()+
-  facet_wrap(~Risk)+
-  geom_hline(data=med, aes(yintercept=Med))
+# compute median risk for the maximum sampling size (we will assume this is our "best" guess)
+
+out.med <- out.boot %>% 
+  filter(size==maxiter) %>% 
+  group_by(risk, scenario) %>% 
+  summarise(med=median(value))
+
+# Plots  ------------------------------------------------------------------
+
+p <- ggplot(out.boot, aes(factor(size), value, fill=risk))+
+  geom_boxplot()+
+  facet_grid(scenario~factor(risk))+
+  geom_hline(data=out.med, aes(yintercept=med, col=risk))+
+  ylim(c(0,1))
+p
+
+p <- ggplot(out.boot, aes(factor(size), value, fill=risk))+
+  geom_boxplot()+
+  facet_grid(~scenario)+
+  geom_hline(data=out.med, aes(yintercept=med, col=risk))+
+  geom_hline(aes(yintercept=0.05), lty=2)+
+  ylim(c(0,1))
 p
 
 
-p <- ggplot(out.boot, aes(factor(Size), Value, fill=Risk))+
-  geom_boxplot()+
-  geom_hline(data=med, aes(yintercept=Med))
+# Compute performance statistics to measure bias and accuracy -------------
+
+out.boot <- left_join(out.boot, out.med, by=c("risk","scenario")) 
+
+out.perf <- out.boot %>% 
+  group_by(scenario, size, risk) %>% 
+  summarise(me=mean(value-med),
+         rmse=sqrt( mean((value-med)^2) ),
+         cv=sqrt(var(value))/mean(value))
+
+p <- ggplot(out.perf, aes(size, me, col=risk))+
+  geom_point()+
+  geom_line()+
+  facet_grid(~scenario)
+p
+
+p <- ggplot(out.perf, aes(size, rmse, col=risk))+
+  geom_point()+
+  geom_line()+
+  facet_grid(~scenario)
+p
+
+p <- ggplot(out.perf, aes(size, cv, col=risk))+
+  geom_point()+
+  geom_line()+
+  facet_grid(~scenario)
 p
