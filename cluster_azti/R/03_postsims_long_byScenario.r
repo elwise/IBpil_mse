@@ -97,10 +97,10 @@ for (cs in scenario_list){
   # IN THIS CASE (LONG RUNS) we prepare only the bio object
   
   out.bio    <- NULL
-  # out.flt    <- NULL
-  # # out.fltstk <- NULL
-  # out.adv    <- NULL
-  # out.risk   <- NULL
+  out.flt    <- NULL
+  # out.fltstk <- NULL
+  out.adv    <- NULL
+  out.risk   <- NULL
   
  # tt <- c(1:42,44:834,839:1000)
   #for (i in tt){
@@ -123,11 +123,11 @@ for (cs in scenario_list){
       out.bio    <- rbind(out.bio, d.bio)
       rm(d.bio)
       
-      # d.flt    <- get(paste(cs,"flt",sep="_"))
-      # rm(list=paste(cs,"flt",sep="_"))
-      # d.flt$iter <- i
-      # out.flt    <- rbind(out.flt, d.flt)
-      # rm(d.flt)
+      d.flt    <- get(paste(cs,"flt",sep="_"))
+      rm(list=paste(cs,"flt",sep="_"))
+      d.flt$iter <- i
+      out.flt    <- rbind(out.flt, d.flt)
+      rm(d.flt)
       
       # d.fltstk <- get(paste(cs,"fltstk",sep="_"))
       # rm(list=paste(cs,"fltstk",sep="_"))
@@ -135,17 +135,17 @@ for (cs in scenario_list){
       # out.fltstk <- rbind(out.fltstk, d.fltstk)
       # rm(d.fltstk)
       
-      # d.adv    <- get(paste(cs,"adv",sep="_"))
-      # rm(list=paste(cs,"adv",sep="_"))
-      # d.adv$iter <- i
-      # out.adv    <- rbind(out.adv, d.adv)
-      # rm(d.adv)
-      # 
-      # d.risk   <- get(paste(cs,"risk",sep="_"))
-      # rm(list=paste(cs,"risk",sep="_"))
-      # d.risk$iter <- i
-      # out.risk   <- rbind(out.risk, d.risk)
-      # rm(d.risk)
+      d.adv    <- get(paste(cs,"adv",sep="_"))
+      rm(list=paste(cs,"adv",sep="_"))
+      d.adv$iter <- i
+      out.adv    <- rbind(out.adv, d.adv)
+      rm(d.adv)
+
+      d.risk   <- get(paste(cs,"risk",sep="_"))
+      rm(list=paste(cs,"risk",sep="_"))
+      d.risk$iter <- i
+      out.risk   <- rbind(out.risk, d.risk)
+      rm(d.risk)
       
       rm(list=ls()[grep( cs, ls(), fixed=TRUE)])
       
@@ -154,7 +154,7 @@ for (cs in scenario_list){
   
   # save results in external files
   
-  save( out.bio, #out.flt, out.adv, out.risk, #out.fltstk, 
+  save( out.bio, out.flt, out.adv, out.risk, #out.fltstk, 
         file=file.path(res.dir, "output_scenarios", paste("results_",cs,".RData",sep="")))
 }
 

@@ -18,7 +18,15 @@ qsub -t 1:3 simsB_test.qsub    # Base case runs
 qsub -t 1:1000 sims01.qsub    # Base case runs
 
 # Summarise the statistics by scenario
+
 qsub postsims.qsub
+
+# For the reference points calculation: we do four cases without/with assessment with REC low/med and HCR12 (constant F for different levels of Fscan)
+
+qsub -t 1-54000 refpts01.qsub
+qsub -t 1-54000 refpts02.qsub
+qsub -t 1-54000 refpts03.qsub
+qsub -t 1-54000 refpts04.qsub
 
 # Consultar estado mis tareas
 qstat -u libaiba

@@ -1,0 +1,8 @@
+#!/bin/bash
+#$ -cwd
+#$ -S /bin/bash
+. /etc/profile
+# module add R
+echo Starting job $JOB_ID - task $SGE_TASK_ID
+echo ${SC}
+R CMD BATCH --no-save R/10_pil_simulations_refpts_ASSss3_REClow.R

@@ -338,8 +338,7 @@ pilHCRs <- function(stocks, advice, advice.ctrl, year, season, stknm,...){
       Ftg   <- ifelse(b.pos == 0, 0, ifelse(b.pos == 1, ref.pts['Fmsy',]*b.datyr/ref.pts[ 'Bmsy',], ref.pts['Fmsy',]))
       
       
-    } else if (rule == 12) { # HCR12: contant fishing
-      
+    } else if (rule == 12) { # HCR12: constant fishing
       
       Ftg <- rep(ref.pts['Flim',],iter)  
       
