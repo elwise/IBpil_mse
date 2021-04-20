@@ -129,7 +129,7 @@ get_stats <- function(out.bio, scenario, proj.yrs = proj.yrs, Blow = 196334, Bli
                   "Risk1_low","Risk2_low", "Risk3_low", 
                   "Risk1_meanR_low", "Risk1_Q975_low", 
                   "Risk1_meanR_med", "Risk1_Q975_med",
-                  "Mean_above_rec2019")
+                  "Risk1_rec2019")
   
   out <- cbind(scenario,out)
   
@@ -248,8 +248,7 @@ df <- out.final %>% pivot_longer(!c(period,scenario,Ass,Rule,Rec,INN,OER), names
 perfnms <- unique(df$indicator)
 perflabels <- unique(df$indicator)
 
-# effect of fixed or variable initial population
-
+# by indicator
 pdf(file.path(plot.dir,"plot_compare.pdf"), onefile=T)
 for (i in 1:length(perfnms)){
   ind <- perfnms[i]
@@ -262,173 +261,38 @@ for (i in 1:length(perfnms)){
 }
 dev.off()
 
-# start here
-# comparison of rules for each SR case
+# by group of indicators
+ggplot(out.final, aes(x=period, y=q50))+
+  geom_point() +
+  geom_pointrange(aes(ymin = q025, ymax = q975),color="grey50") +
+  facet_grid(. ~ Rec, scale="free_y") +
+  geom_point(aes(y=Mean, col="Mean")) +
+  geom_point(aes(y=Median_Last_Yr, col="LY Median")) +
+  ylab("Recruitment")
+ggsave(file.path(plot.dir,"compare_quantiles.png"), height=4)
 
-pdf(file.path(plot.dir,"plot_compare_rule_initial.pdf"), onefile=T)
-for (i in 1:length(perfnms)){
-  ind <- perfnms[i]
-  aux <- subset(df, indicator %in% ind & period=="initial")
-  aux$rule <- as.factor(aux$Rule)
-  p <- ggplot(aux, aes(x=factor(Rule), y=value, fill=Rule))+
-    geom_bar(stat="identity")+
-    facet_grid(Ass ~ Rec)+
-    ylab(perflabels[i])
-  if(length(grep("Risk", ind))>0){
-    p <- p + geom_hline(yintercept = 0.05, linetype = "longdash")
-    p <- ylim(c(0,1)) 
-  }
-  if(ind %in% c("MP_Success","MP_Success_Low")){
-    p <- p + geom_hline(yintercept = 0.9, linetype = "longdash")
-    p <- p + ylim(c(0,1)) 
-  }  
-  if(ind %in% c("closure","closure_once")){
-    p <- p + ylim(c(0,1)) 
-  }  
-  if(ind %in% c("p025_SSB","p05_SSB","Median_SSB","p95_SSB","p975_SSB","Mean_SSB","Median_lastSSB")){
-    p <- p + geom_hline(yintercept = c(196334, 337448), linetype = "longdash")
-  }
-  print(p)
-}
-dev.off()
 
-pdf(file.path(plot.dir,"plot_compare_rule_short.pdf"), onefile=T)
-for (i in 1:length(perfnms)){
-  ind <- perfnms[i]
-  aux <- subset(df, indicator %in% ind & period=="short")
-  aux$rule <- as.factor(aux$Rule)
-  p <- ggplot(aux, aes(x=factor(Rule), y=value, fill=Rule))+
-    geom_bar(stat="identity")+
-    facet_grid(Ass ~ Rec)+
-    ylab(perflabels[i])
-  if(length(grep("Risk", ind))>0){
-    p <- p + geom_hline(yintercept = 0.05, linetype = "longdash")
-    p <- ylim(c(0,1)) 
-  }
-  if(ind %in% c("MP_Success","MP_Success_Low")){
-    p <- p + geom_hline(yintercept = 0.9, linetype = "longdash")
-    p <- p + ylim(c(0,1)) 
-  }  
-  if(ind %in% c("closure","closure_once")){
-    p <- p + ylim(c(0,1)) 
-  }  
-  if(ind %in% c("p025_SSB","p05_SSB","Median_SSB","p95_SSB","p975_SSB","Mean_SSB","Median_lastSSB")){
-    p <- p + geom_hline(yintercept = c(196334, 337448), linetype = "longdash")
-  }
-  print(p)
-}
-dev.off()
+aux <- subset(df, indicator %in% c("Risk1_med","Risk2_med", "Risk3_med","Risk1_low","Risk2_low", "Risk3_low" ))
+aux <- separate(aux, indicator, into = c("Risk", "Blim"))
+ggplot(aux, aes(x=period, y=value*100, col = Rec))+
+  geom_point()+
+  facet_grid(Risk ~ Blim, scale="free_y", labeller =  label_both) +
+  ylab("Probability")
+ggsave(file.path(plot.dir,"compare_RiskSSB.png"), height=4)
 
-pdf(file.path(plot.dir,"plot_compare_rule_last.pdf"), onefile=T)
-for (i in 1:length(perfnms)){
-  ind <- perfnms[i]
-  aux <- subset(df, indicator %in% ind & period=="last")
-  aux$rule <- as.factor(aux$Rule)
-  p <- ggplot(aux, aes(x=factor(Rule), y=value, fill=Rule))+
-    geom_bar(stat="identity")+
-    facet_grid(Ass ~ Rec)+
-    ylab(perflabels[i])
-  if(length(grep("Risk", ind))>0){
-    p <- p + geom_hline(yintercept = 0.05, linetype = "longdash")
-    p <- ylim(c(0,1)) 
-  }
-  if(ind %in% c("MP_Success","MP_Success_Low")){
-    p <- p + geom_hline(yintercept = 0.9, linetype = "longdash")
-    p <- p + ylim(c(0,1)) 
-  }  
-  if(ind %in% c("closure","closure_once")){
-    p <- p + ylim(c(0,1)) 
-  }  
-  if(ind %in% c("p025_SSB","p05_SSB","Median_SSB","p95_SSB","p975_SSB","Mean_SSB","Median_lastSSB")){
-    p <- p + geom_hline(yintercept = c(196334, 337448), linetype = "longdash")
-  }
-  print(p)
-}
-dev.off()
 
-# comparison of SRs for each rule 
+aux <- subset(df, indicator %in% c("Risk1_meanR_low", "Risk1_Q975_low", 
+                                   "Risk1_meanR_med", "Risk1_Q975_med",
+                                   "Risk1_rec2019"))
+facet_names <- c("Risk1_meanR_low" = "mR_low", "Risk1_Q975_low" ="q975_low", 
+                 "Risk1_meanR_med" = "R_med" , "Risk1_Q975_med" = "q975_med",
+                 "Risk1_rec2019" = "R2019" )
 
-pdf(file.path(plot.dir,"plot_compare_sr_initial.pdf"), onefile=T)
-for (i in 1:length(perfnms)){
-  ind <- perfnms[i]
-  aux <- subset(df, indicator %in% ind & period=="initial")
-  aux$rule <- as.factor(aux$Rule)
-  p <- ggplot(aux, aes(x=Rec, y=value, fill=Rec))+
-    geom_bar(stat="identity")+
-    facet_grid(Ass ~ Rule)+
-    ylab(perflabels[i])
-  if(length(grep("Risk", ind))>0){
-    p <- p + geom_hline(yintercept = 0.05, linetype = "longdash")
-    p <- ylim(c(0,1)) 
-  }
-  if(ind %in% c("MP_Success","MP_Success_Low")){
-    p <- p + geom_hline(yintercept = 0.9, linetype = "longdash")
-    p <- p + ylim(c(0,1)) 
-  }  
-  if(ind %in% c("closure","closure_once")){
-    p <- p + ylim(c(0,1)) 
-  }  
-  if(ind %in% c("p025_SSB","p05_SSB","Median_SSB","p95_SSB","p975_SSB","Mean_SSB","Median_lastSSB")){
-    p <- p + geom_hline(yintercept = c(196334, 337448), linetype = "longdash")
-  }
-  print(p)
-}
-dev.off()
-
-pdf(file.path(plot.dir,"plot_compare_sr_short.pdf"), onefile=T)
-for (i in 1:length(perfnms)){
-  ind <- perfnms[i]
-  aux <- subset(df, indicator %in% ind & period=="short")
-  aux$rule <- as.factor(aux$Rule)
-  p <- ggplot(aux, aes(x=Rec, y=value, fill=Rec))+
-    geom_bar(stat="identity")+
-    facet_grid(Ass ~ Rule)+
-    ylab(perflabels[i])
-  if(length(grep("Risk", ind))>0){
-    p <- p + geom_hline(yintercept = 0.05, linetype = "longdash")
-    p <- ylim(c(0,1)) 
-  }
-  if(ind %in% c("MP_Success","MP_Success_Low")){
-    p <- p + geom_hline(yintercept = 0.9, linetype = "longdash")
-    p <- p + ylim(c(0,1)) 
-  }  
-  if(ind %in% c("closure","closure_once")){
-    p <- p + ylim(c(0,1)) 
-  }  
-  if(ind %in% c("p025_SSB","p05_SSB","Median_SSB","p95_SSB","p975_SSB","Mean_SSB","Median_lastSSB")){
-    p <- p + geom_hline(yintercept = c(196334, 337448), linetype = "longdash")
-  }
-  print(p)
-}
-dev.off()
-
-pdf(file.path(plot.dir,"plot_compare_sr_last.pdf"), onefile=T)
-for (i in 1:length(perfnms)){
-  ind <- perfnms[i]
-  aux <- subset(df, indicator %in% ind & period=="last")
-  aux$rule <- as.factor(aux$Rule)
-  p <- ggplot(aux, aes(x=Rec, y=value, fill=Rec))+
-    geom_bar(stat="identity")+
-    facet_grid(Ass ~ Rule)+
-    ylab(perflabels[i])
-  if(length(grep("Risk", ind))>0){
-    p <- p + geom_hline(yintercept = 0.05, linetype = "longdash")
-    p <- ylim(c(0,1)) 
-  }
-  if(ind %in% c("MP_Success","MP_Success_Low")){
-    p <- p + geom_hline(yintercept = 0.9, linetype = "longdash")
-    p <- p + ylim(c(0,1)) 
-  }  
-  if(ind %in% c("closure","closure_once")){
-    p <- p + ylim(c(0,1)) 
-  }  
-  if(ind %in% c("p025_SSB","p05_SSB","Median_SSB","p95_SSB","p975_SSB","Mean_SSB","Median_lastSSB")){
-    p <- p + geom_hline(yintercept = c(196334, 337448), linetype = "longdash")
-  }
-  print(p)
-}
-dev.off()
-
+ggplot(aux, aes(x=period, y=value*100, col = Rec))+
+  geom_point()+
+  facet_grid(indicator ~ ., scale="free_y", labeller = as_labeller(facet_names)) +
+  ylab("Probability")
+ggsave(file.path(plot.dir,"compare_RiskRec.png"), height=4)
 
 
 # read data
@@ -456,29 +320,36 @@ gg <- subset(dfyr, Rule %in% c('HCR7') & Ass == "ASSss3" & indicator == "rec")
 
 for (rr in c("REClow","REClowmed","RECmix")){
   
-  if(rr=="REClow") { meanR <- 6993117/1000000; q975R <- 16030832/1000000  } else { meanR <- 12346264/1000000; q975R <- 34380573/1000000 }
+  meanR_low <- 6993117/1000000
+  q975R_low <- 16030832/1000000
   
-  r2019 <-rec2019/1000000
+  
+  meanR_med <- 12346264/1000000
+  q975R_med <- 34380573/1000000
+  
+  r2019 <- 16760900/1000000
   
   aux <- subset(gg,Rec==rr)
   p <- ggplot(data=aux,aes(x=year, y=q50))+
     geom_ribbon(data=aux,aes(ymin = q05, ymax = q95),alpha=0.2,show.legend = F,fill="#F9840044") +
     geom_line(data=aux,color="#F98400")+
-    
-    facet_grid(.~Rule,scales="free")+
     geom_vline(xintercept = 2020, linetype = "dotted",color="#00A08A")+
     ylab("") +
     scale_x_continuous(name="Year",breaks = seq(1978,2070,5))+
     scale_y_continuous(breaks=scales::pretty_breaks(n = 6)) +
-    geom_hline(aes(yintercept = meanR),linetype="dashed",color="#00A08A") +
-    geom_hline(aes(yintercept = q975R), linetype="dashed",color="red") +
+    geom_hline(aes(yintercept = meanR_med),linetype="dashed",color="#00A08A") +
+    geom_hline(aes(yintercept = meanR_low),linetype="dashed",color="#00A08A") +
+    geom_hline(aes(yintercept = q975R_med), linetype="dashed",color="red") +
+    geom_hline(aes(yintercept = q975R_low), linetype="dashed",color="red") +
     geom_hline(aes(yintercept = r2019), linetype="dashed",color="black") +
-    annotate("text", 2068, meanR, vjust = 0.2, hjust=0.2,label = "meanRec",parse=T,size=4,color="grey30") +
-    annotate("text", 2068, q975R, vjust = 0.2, hjust=0.2,label = "q975R",parse=T,size=4,color="grey30") +
-    annotate("text", 2068, r2019, vjust = 0.2, hjust=0.2,label = "R2019",parse=T,size=4,color="grey30")
+    annotate("text", 2060, meanR_low, vjust = 0.2, hjust=0.2,label = "Mean_R_low_prod",parse=T,size=3,color="grey30") +
+    annotate("text", 2060, q975R_low, vjust = 0.2, hjust=0.2,label = "Quantile97.5_low_prod",parse=T,size=3,color="grey30") +
+    annotate("text", 2060, meanR_med, vjust = 0.2, hjust=0.2,label = "Mean_R_med_prod",parse=T,size=3,color="grey30") +
+    annotate("text", 2060, q975R_med, vjust = 0.2, hjust=0.2,label = "Quantile97.5_med_prod",parse=T,size=3,color="grey30") +
+    annotate("text", 2060, r2019, vjust = 0.2, hjust=0.2,label = "Recruitment_of_2019",parse=T,size=3,color="grey30")
 
 
-  ggsave(paste0(plot.dir,'/',rr,"_HCR7_Recruitment.png"))
+  ggsave(paste0(plot.dir,'/',rr,"_HCR7_Recruitment.png"),height=4)
 }
 
 
