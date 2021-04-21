@@ -23,6 +23,7 @@ setwd(wd)
 
 # directory with results
 res.dir  <- file.path("./output_refpts")
+res.plots  <- file.path("./output_refpts/plots")
 
 #==============================================================================
 # LOAD LIBRARIES AND FUNCTIONS                                             ----
@@ -53,17 +54,8 @@ ggplot(df1, aes(x=Fscan)) +
   geom_hline(yintercept = Bref, col = "red", linetype="dashed") +
   annotate("text", x = 0, y = Bref, label = "Blim", col = "red",hjust = 0.8, vjust = 0) +
   labs(y = "Biomass 1+",x = "Ftarget")
-ggsave(paste0(res.dir,'/',rr,"_ASSnone_SSBDistribution.png"))
+ggsave(paste0(res.plots,'/',rr,"_ASSnone_SSBDistribution.png"),height = 4)
 
-if(rr=="RECmed") {  avg_B1plus <- df1$avg_P_B1plus_Blim } else { avg_B1plus <- df1$avg_P_B1plus_Blow}
-
-###Probability plot (mean probability)
-ggplot(df1, aes(x=Fscan)) +
-  theme_bw() + 
-  geom_line(aes(y = avg_B1plus)) + 
-  geom_hline(yintercept = 0.05, col = "red", lwd = 1) +
-  labs(y = "Probability",x = "Ftarget")
-ggsave(paste0(res.dir,'/',rr,"_ASSnone_Probplot.png"))
 
 if(rr=="RECmed") {  max_B1plus <- df1$max_P_B1plus_Blim } else { max_B1plus <- df1$max_P_B1plus_Blow}
 
@@ -73,17 +65,33 @@ coefs <- coefficients(g)
 Flim <- as.numeric(-coefs[1] / coefs[2]) #when risk is 0.5
 df1$pred <- predict(g, newdata = df1["Fscan"], type = "response")
 
+
 ggplot(df1, aes(x=Fscan, y=max_B1plus)) +
+  theme_bw() +
   geom_point(alpha=1/10) +
-  geom_line(aes(y=pred),col='blue') +
-  geom_hline(yintercept = 0.5) +
-  geom_vline(xintercept = Flim) +
+  geom_line(aes(y=pred),col='black') +
+  geom_hline(yintercept = 0.5, col="grey40",linetype = "dashed") +
+  geom_vline(xintercept = Flim, col="grey40",linetype = "dashed") +
+  annotate("text", x=Flim, y=0,label=paste("Flim = ", round(Flim,2))) +
   ylab("Risk 3") +
   xlab("Ftarget")
-ggsave(paste0(res.dir,'/',rr,"_ASSnone_Flim.png"))
+ggsave(paste0(res.plots,'/',rr,"_ASSnone_Flim.png"),height = 4)
+
+if(rr=="RECmed") {  avg_B1plus <- df1$avg_P_B1plus_Blim } else { avg_B1plus <- df1$avg_P_B1plus_Blow}
 
 #extract value associated to Bpa, i.e., F such that prob3==0.05
 Fbpa <- df1$P5th_F[df1$Fscan==round(Flim,2)]
+
+###Probability plot (mean probability)
+ggplot(df1, aes(x=Fscan)) +
+  theme_bw() + 
+  geom_line(aes(y = avg_B1plus)) + 
+  geom_hline(yintercept = 0.05, col = "red", lwd = 1) +
+  geom_vline(xintercept = Fbpa, col = "grey40",linetype="dashed") +
+  annotate("text", x=Fbpa, y=0,label=paste("Fbpa = ", round(Fbpa,2))) +
+  labs(y = "Probability",x = "Ftarget")
+ggsave(paste0(res.plots,'/',rr,"_ASSnone_Probplot.png"),height = 4)
+
 
 #extract associated SSB, i.e., possible Bpa
 i <- which.min(df1$Median_B1plus > Bref) # first position where Median B1plus is above Bref
@@ -103,7 +111,7 @@ out.Flim <- rbind(out.Flim,out)
 write.table( out.Flim, file=file.path(res.dir,"Flim.csv"), dec = ".", sep = ";",
              row.names = FALSE)
 
-rm(out, out.Flim, Bpa, pBpa, it, i, Fbpa, Flim, g, coefs, Flim, df1, rr)
+rm(out, out.Flim, Bpa, pBpa, it, i, Fbpa, Flim, g, coefs, df1, rr)
 
 
 #############################################
@@ -128,7 +136,7 @@ ggplot(df2, aes(x=Fscan)) +
   geom_hline(yintercept = Bref, col = "red", linetype="dashed") +
   annotate("text", x = 0, y = Bref, label = "Blim", col = "red",hjust = 0.8, vjust = 0) +
   labs(y = "Biomass 1+",x = "Ftarget")
-ggsave(paste0(res.dir,'/',rr,"_ASSss3_SSBDistribution.png"))
+ggsave(paste0(res.plots,'/',rr,"_ASSss3_SSBDistribution.png"))
 
 ###Probability plot (mean probability)
 if(rr=="RECmed") {  avg_B1plus <- df2$avg_P_B1plus_Blim } else { avg_B1plus <- df2$avg_P_B1plus_Blow}
@@ -138,15 +146,14 @@ ggplot(df2, aes(x=Fscan)) +
   geom_line(aes(y = avg_B1plus)) + 
   geom_hline(yintercept = 0.05, col = "red", lwd = 1) +
   labs(y = "Probability",x = "Ftarget")
-ggsave(paste0(res.dir,'/',rr,"_ASSnone_Probplot.png"))
+ggsave(paste0(res.plots,'/',rr,"_ASSss3_Probplot.png"))
 
 ###FMSY plot(s)
 
 p1 <- ggplot(df2, aes(x=Fscan, y=Median_Catch)) +
   geom_point(alpha=1/10) +
   ylab("Median Catch") +
-  xlab("Ftarget") +
-  ggtitle("Search for FMSY")
+  xlab("Ftarget") 
 
 interval = 0.95
 
@@ -182,29 +189,32 @@ p4 <- p3 + geom_hline(yintercept = yield.p95,colour="red", linetype="dashed", al
   geom_point(aes(x = fmsy.lower.mean,y=landings.lower.mean),colour="red",size=1.5,alpha=1/10)+
   geom_point(aes(x = fmsy.upper.mean,y=landings.upper.mean),colour="red",size=1.5,alpha=1/10)
 
-p5 <- p4 +geom_vline(xintercept=fmsy.lower.mean,linetype="dashed", alpha=5/10) +
-  annotate("text", fmsy.lower.mean, 0, vjust = 0.8, hjust=0,label = "F[MSY]~Lower",parse=T,size=4,color="grey30") +
-  geom_vline(xintercept=fmsy.upper.mean,alpha=5/10,linetype="dashed") +
-  annotate("text", fmsy.upper.mean, 0,  vjust = 0.8, hjust=0,label = "F[MSY]~Upper",parse=T,size=4,color="grey30")
+p5 <- p4 + geom_vline(xintercept=fmsy.lower.mean,linetype="dashed", alpha=5/10) +
+  geom_vline(xintercept=fmsy.upper.mean,alpha=5/10,linetype="dashed")
+  #annotate("text", fmsy.lower.mean, 0, vjust = 0.8, hjust=0,label = "F[MSY]~Lower",parse=T,size=4,color="grey30") +
 
-p6 <- p5 + annotate(geom="text", x=1.5, y=40000, col="black",
+  #annotate("text", fmsy.upper.mean, 0,  vjust = 0.8, hjust=0,label = "F[MSY]~Upper",parse=T,size=4,color="grey30")
+
+p6 <- p5 + ylim(0,50000) + xlim(0,0.3)+ theme_bw () +
+annotate(geom="text", x=0.27, y=30000, col="black",
                     label=paste("Fmsy Lower:", round(fmsy.lower.mean,2),
                                 "\nFmsy:",round(lm.pred$x[lm.pred$y==max(lm.pred)],2), 
                                 "\nFmsy Upper:",round(fmsy.upper.mean,2)))
-ggsave(paste0(res.dir,'/',rr,"_ASSss3_Fmsy.png"))
+ggsave(paste0(res.plots,'/',rr,"_ASSss3_Fmsy.png"))
 
 #plot_grid(p1, p2, p3, p4, p5, p6, ncol=3, labels=LETTERS[1:6])
 
 ### SSB plot with associated Fmsy lower and upper
-p7 <- ggplot(df2, aes(x=Fscan)) +
+ggplot(df2, aes(x=Fscan)) +
   theme_bw() + 
   geom_linerange(aes(ymin = P5th_B1plus, ymax = P95th_B1plus)) + 
   geom_line(aes(y = Median_B1plus)) +
-  geom_vline(xintercept = c(fmsy.lower.mean,fmsy.upper.mean),col='red', lwd = 1) +
+  geom_vline(xintercept = c(fmsy.lower.mean,fmsy.upper.mean),col= "grey40", linetype="dashed") +
+  geom_vline(xintercept = FMSY,col= "grey40") +
   geom_hline(yintercept = Bref, col = "red", linetype="dashed") +
   annotate("text", x = 0, y = Bref, label = "Blim", col = "red",hjust = 0, vjust = 0) +
   labs(y = "Biomass 1+",x = "Ftarget")
-  ggsave(paste0(res.dir,'/',rr,"_ASSs3_SSBDistribution_FmsyIntervals.png"))
+  ggsave(paste0(res.plots,'/',rr,"_ASSs3_SSBDistribution_FmsyIntervals.png"))
   
   out <- data.frame(Rec = rr, Fmsy=FMSY, FmsyUpper = fmsy.upper, FmsyLower = fmsy.lower)
   
