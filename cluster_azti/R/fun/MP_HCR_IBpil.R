@@ -68,7 +68,7 @@ pilHCRs <- function(stocks, advice, advice.ctrl, year, season, stknm,...){
   rule <- advice.ctrl[[stknm]]$rule
   
 
-  if (rule %in% c(0:12)) {
+  if (rule %in% c(0:14)) {
     
     stk <- window(stk, start=yrsnumbs[1], end=yrsnumbs[year-1]) #! CHECK WHEN ASSESSMENT USED
     
@@ -302,7 +302,7 @@ pilHCRs <- function(stocks, advice, advice.ctrl, year, season, stknm,...){
       
       Ftg <- rep(0,iter)
       
-    }else if (rule == 8 | rule==9 | rule==10) {#HCR8, HCR9, HCR10: new HCR in 2020
+    }else if (rule == 8 | rule==9 | rule==10 | rule==13 | rule==14) {#HCR8, HCR9, HCR10, HCR13, HCR14: new HCR in 2020
       
       # ad-hoc modification of rule parameters 
       ref.pts['Bloss',] <- 112943
@@ -401,6 +401,20 @@ pilHCRs <- function(stocks, advice, advice.ctrl, year, season, stknm,...){
           fwd.ctrl@trgtArray[1,2,] <- Ftg[i]
           #Set maximum catch of 50000
           fwd.ctrl@trgtArray[2,3,] <- 50000
+          
+        } else if (rule ==13 ){
+          fwd.ctrl <- fwdControl(data.frame(year = c(assyrnumb+1), quantity = c('f','catch')))
+          #Set f 
+          fwd.ctrl@trgtArray[1,2,] <- Ftg[i]
+          #Set maximum catch of 35000
+          fwd.ctrl@trgtArray[2,3,] <- 35000
+          
+        } else if (rule ==14 ){
+          fwd.ctrl <- fwdControl(data.frame(year = c(assyrnumb+1), quantity = c('f','catch')))
+          #Set f 
+          fwd.ctrl@trgtArray[1,2,] <- Ftg[i]
+          #Set maximum catch of 30000
+          fwd.ctrl@trgtArray[2,3,] <- 30000
           
         } else{
           
