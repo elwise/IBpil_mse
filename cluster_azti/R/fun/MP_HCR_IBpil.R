@@ -68,7 +68,7 @@ pilHCRs <- function(stocks, advice, advice.ctrl, year, season, stknm,...){
   rule <- advice.ctrl[[stknm]]$rule
   
 
-  if (rule %in% c(0:14)) {
+  if (rule %in% c(0:16)) {
     
     stk <- window(stk, start=yrsnumbs[1], end=yrsnumbs[year-1]) #! CHECK WHEN ASSESSMENT USED
     
@@ -342,7 +342,28 @@ pilHCRs <- function(stocks, advice, advice.ctrl, year, season, stknm,...){
       
       Ftg <- rep(ref.pts['Flim',],iter)  
       
+    }else if (rule==15){# HCR15: ICES HCR for varying Fmsy with MSYBtrigger of low regime. For refpts calculations 
+      
+      # ad-hoc modification of rule parameters 
+      ref.pts['Bmsy',] <- 252523
+      ref.pts['Blim',] <- 196334
+      
+      # Find where the SSB (Age structured) OR Biomass (Aggregated) in relation to reference points.
+      b.pos <- apply(matrix(1:iter,1,iter),2, function(i) findInterval(b.datyr[i], ref.pts[c('Blim', 'Bmsy'),i]))  # [it]
+      Ftg   <- ifelse(b.pos == 0, 0, ifelse(b.pos == 1, ref.pts['Fmsy',]*b.datyr/ref.pts[ 'Bmsy',], ref.pts['Fmsy',]))
+      
+    }else if (rule==16){# HCR16: ICES HCR for varying Fmsy with MSYBtrigger of medium regime. For refpts calculations 
+      
+      # ad-hoc modification of rule parameters 
+      ref.pts['Bmsy',] <- 446331
+      ref.pts['Blim',] <- 337448
+      
+      # Find where the SSB (Age structured) OR Biomass (Aggregated) in relation to reference points.
+      b.pos <- apply(matrix(1:iter,1,iter),2, function(i) findInterval(b.datyr[i], ref.pts[c('Blim', 'Bmsy'),i]))  # [it]
+      Ftg   <- ifelse(b.pos == 0, 0, ifelse(b.pos == 1, ref.pts['Fmsy',]*b.datyr/ref.pts[ 'Bmsy',], ref.pts['Fmsy',]))
+      
     }
+  
         
       # Fill the 0-s and NA-s with almost 0 values to avoid problems when the fishery is closed for example, or there is no catch...
       stk@harvest[stk@harvest < 0] <- 0.00001
