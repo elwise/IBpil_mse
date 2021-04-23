@@ -65,44 +65,42 @@ coefs <- coefficients(g)
 Flim <- as.numeric(-coefs[1] / coefs[2]) #when risk is 0.5
 df1$pred <- predict(g, newdata = df1["Fscan"], type = "response")
 
+#extract associated SSB, i.e., possible Bpa
+i <- which.max(max_B1plus >= 0.05) # risk 3 = 0.05
+#make interpolation between that position and the previous one
+it <- approx(df1$Fscan[i-0:1],max_B1plus[i-0:1])
+#check Fscan that corresponds to risk3 closer to 0.05
+Fbpa <- round(it$x[which.max(it$y >= 0.050)],2)
+#Now check what Median B1 plus corresponds to Fpa
+Bpa <- round(df1$Median_B1plus[df1$Fscan==Fpa],0)
 
 ggplot(df1, aes(x=Fscan, y=max_B1plus)) +
   theme_bw() +
   geom_point(alpha=1/10) +
   geom_line(aes(y=pred),col='black') +
-  geom_hline(yintercept = 0.5, col="grey40",linetype = "dashed") +
-  geom_vline(xintercept = Flim, col="grey40",linetype = "dashed") +
-  annotate("text", x=Flim, y=0,label=paste("Flim = ", round(Flim,2))) +
+  annotate("segment", x = 0, xend = Fbpa, y = 0.05, yend = 0.05, colour = "grey40", linetype = "dashed") +
+  annotate("segment", x = Fbpa, xend = Fbpa, y = 0, yend = 0.05, colour = "grey40", linetype = "dashed") +
+  annotate("text", x=Fbpa, y=0.05,label=paste("Fbpa = ", round(Fbpa,2)),vjust=-0.2,hjust=-0.2) +
+  annotate("segment", x = 0, xend = Flim, y = 0.5, yend = 0.5, colour = "grey40", linetype = "dashed") +
+  annotate("segment", x = Flim, xend = Flim, y = 0, yend = 0.5, colour = "grey40", linetype = "dashed") +
+  annotate("text", x=Flim, y=0.5,label=paste("Flim = ", round(Flim,2)),vjust=-0.2,hjust=-0.2) +
   ylab("Risk 3") +
   xlab("Ftarget")
 ggsave(paste0(res.plots,'/',rr,"_ASSnone_Flim.png"),height = 4)
 
-if(rr=="RECmed") {  avg_B1plus <- df1$avg_P_B1plus_Blim } else { avg_B1plus <- df1$avg_P_B1plus_Blow}
 
-#extract value associated to Bpa, i.e., F such that prob3==0.05
-Fbpa <- df1$P5th_F[df1$Fscan==round(Flim,2)]
+if(rr=="RECmed") {  avg_B1plus <- df1$avg_P_B1plus_Blim } else { avg_B1plus <- df1$avg_P_B1plus_Blow}
 
 ###Probability plot (mean probability)
 ggplot(df1, aes(x=Fscan)) +
   theme_bw() + 
   geom_line(aes(y = avg_B1plus)) + 
   geom_hline(yintercept = 0.05, col = "red", lwd = 1) +
-  geom_vline(xintercept = Fbpa, col = "grey40",linetype="dashed") +
-  annotate("text", x=Fbpa, y=0,label=paste("Fbpa = ", round(Fbpa,2))) +
   labs(y = "Probability",x = "Ftarget")
 ggsave(paste0(res.plots,'/',rr,"_ASSnone_Probplot.png"),height = 4)
 
 
-#extract associated SSB, i.e., possible Bpa
-i <- which.min(df1$Median_B1plus > Bref) # first position where Median B1plus is above Bref
-#make interpolation between that position and the previous one
-it <- approx(df1$Fscan[i-0:1], df1$Median_B1plus[i-0:1])
-#check Fscan that corresponds to Median B1 plus closer to Bref
-pBpa <- round(it$x[which.max(it$y <= Bref)],2)
-#Now check what is the P95th of that Value
-Bpa <- df1$P95th_B1plus[df1$Fscan==pBpa]
-
-out <- data.frame(Rec = rr, Flim=Flim, Fbpa = Fbpa, Bpa = Bpa)
+out <- data.frame(Rec = rr, Flim=round(Flim,2), Fbpa = Fbpa, Bpa = Bpa)
 
 out.Flim <- rbind(out.Flim,out)
 
@@ -111,7 +109,7 @@ out.Flim <- rbind(out.Flim,out)
 write.table( out.Flim, file=file.path(res.dir,"Flim.csv"), dec = ".", sep = ";",
              row.names = FALSE)
 
-rm(out, out.Flim, Bpa, pBpa, it, i, Fbpa, Flim, g, coefs, df1, rr)
+rm(out, out.Flim, Bpa, it, i, Fbpa, Flim, g, coefs, df1, rr)
 
 
 #############################################
@@ -138,14 +136,14 @@ ggplot(df2, aes(x=Fscan)) +
   labs(y = "Biomass 1+",x = "Ftarget")
 ggsave(paste0(res.plots,'/',rr,"_ASSss3_SSBDistribution.png"))
 
-###Probability plot (mean probability)
-if(rr=="RECmed") {  avg_B1plus <- df2$avg_P_B1plus_Blim } else { avg_B1plus <- df2$avg_P_B1plus_Blow}
+###Probability plot (max probability)
+if(rr=="RECmed") {  max_B1plus <- df2$max_P_B1plus_Blim } else { max_B1plus <- df2$max_P_B1plus_Blow}
 
 ggplot(df2, aes(x=Fscan)) +
   theme_bw() + 
-  geom_line(aes(y = avg_B1plus)) + 
+  geom_line(aes(y = max_B1plus)) + 
   geom_hline(yintercept = 0.05, col = "red", lwd = 1) +
-  labs(y = "Probability",x = "Ftarget")
+  labs(y = "Risk 3",x = "Ftarget")
 ggsave(paste0(res.plots,'/',rr,"_ASSss3_Probplot.png"))
 
 ###FMSY plot(s)

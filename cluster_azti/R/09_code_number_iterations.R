@@ -31,17 +31,33 @@ scenario.list <- sub("results_(.*).RData", "\\1", list.files(file.path(".","outp
 # proj.yrs: years to compute the sample size
 # Blim: Blim
 
+
 get_risks <- function(out.bio, sample_size, proj.yrs = 2061:2070, Blim ) {
   sampled_iters <- sample(unique(out.bio$iter), size = sample_size)
   xx <- subset(out.bio, out.bio$iter %in% sampled_iters & out.bio$year %in% proj.yrs)
+  
   belowBlim <- xx[, 'ssb'] < Blim
+  
   # Risk 1: P(SSB < Blim)
   r1 <- mean(belowBlim)
   # Risk 2: P(SSB < Blim) at least once
-  r2 <- mean(tapply(belowBlim, xx$iter, any)  )
+  r2 <- mean(tapply(belowBlim, xx$iter, any))
   # Risk 3: maximum anual P(SSB < Blim)
   r3 <- max(tapply(belowBlim, list(xx$year), mean)) 
-  return(c(r1 = r1, r2 = r2, r3 = r3))
+  
+  # average catch
+  r4 <- mean(tapply(xx$catch, xx$iter, mean)) 
+  
+  # average ssb
+  r5 <- mean(tapply(xx$ssb, xx$iter, mean)) 
+  
+  # average rec
+  r6 <- mean(tapply(xx$rec, xx$iter, mean)) 
+  
+  # average f
+  r7 <- mean(tapply(xx$f, xx$iter, mean)) 
+  
+  return(c(r1 = r1, r2 = r2, r3 = r3, r4 = r4, r5 = r5, r6 = r6, r7 = r7))
 }
 
 # Risk depending on the number of iterations ------------------------------
@@ -66,20 +82,23 @@ get_scenario_risks <- function(sc) {
   ) %>% plyr::ldply()
 }
 
+set.seed(100)
+
 out.boot <- lapply(scenario.list, get_scenario_risks) %>% plyr::ldply()
 
-names(out.boot) <- c("scenario","size", "risk1", "risk2", "risk3")
+names(out.boot) <- c("scenario","size", "risk1", "risk2", "risk3", "catch", "ssb", "rec", "f")
 
 # from wide to long format for plotting
 out <- out.boot %>%
   separate(scenario, into = c("Ass", "Rule", "Rec", "INN", "OER"), sep = "_",  remove=FALSE) %>% 
+  rename(cols=starts_with("risk"), names_to = "risk")
   pivot_longer(cols=starts_with("risk"),
                names_to = "risk",
                names_prefix = "risk", 
                values_to="value")
 
 # save to file
-save(out.boot, file=file.path(".","2020/cluster_azti/output_long","out.boot2.RData"))
+save(out.boot, file=file.path(".","output_long","out.boot3.RData"))
 
 # compute median risk for the maximum sampling size (we will assume this is our "best" guess)
 
