@@ -13,6 +13,7 @@ theme_set(theme_bw(base_size = 14))
 # Working directory --------------------------------------------------------
 
 wd <- "D:/IPMA/SARDINE/ADVICE_MP/FLBEIA_mseIBpil/2020/cluster_azti/" # main directory
+#wd <- "C:/Use/GitHub/IBpil_mse/cluster_azti/"
 setwd(wd)
 
 # directory with results
@@ -30,7 +31,6 @@ scenario.list <- sub("results_(.*).RData", "\\1", list.files(file.path(".","outp
 # sample_size: sample size
 # proj.yrs: years to compute the sample size
 # Blim: Blim
-
 
 get_risks <- function(out.bio, sample_size, proj.yrs = 2061:2070, Blim ) {
   sampled_iters <- sample(unique(out.bio$iter), size = sample_size)
@@ -91,14 +91,11 @@ names(out.boot) <- c("scenario","size", "risk1", "risk2", "risk3", "catch", "ssb
 # from wide to long format for plotting
 out <- out.boot %>%
   separate(scenario, into = c("Ass", "Rule", "Rec", "INN", "OER"), sep = "_",  remove=FALSE) %>% 
-  rename(cols=starts_with("risk"), names_to = "risk")
+  #rename(cols=starts_with("risk"), names_to = "risk")
   pivot_longer(cols=starts_with("risk"),
                names_to = "risk",
                names_prefix = "risk", 
                values_to="value")
-
-# save to file
-save(out.boot, file=file.path(".","output_long","out.boot3.RData"))
 
 # compute median risk for the maximum sampling size (we will assume this is our "best" guess)
 
@@ -106,6 +103,9 @@ out.med <- out %>%
   filter(size==maxiter) %>% 
   group_by(risk, Ass,Rule, Rec) %>% 
   summarise(med=median(value))
+
+# save to file
+save(out, out.boot, out.med, file=file.path(".","output_long","out.boot4.RData"))
 
 # Changed this part of the code to avoid 'for'
 # # Ad-hoc function to compute risk for a random subsample ------------------
@@ -202,8 +202,8 @@ for (rr in c("REClow","REClowmed")){
   
   ggplot(aux, aes(factor(size), value, fill=risk)) +
     geom_boxplot() +
-    facet_grid(Ass~Rule, scales = "free_y") +
-    geom_hline(aes(yintercept=0.05),linetype="dashed", size=0.9) +
+    facet_grid(Rule~Ass, scales = "free_y") +
+    #geom_hline(aes(yintercept=0.05),linetype="dashed", size=0.9) +
     geom_hline(data=med, aes(yintercept=med, col=risk)) +
     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
   ggsave(paste0(plot.dir,'/',rr,"risks.png"))
@@ -220,7 +220,7 @@ for (rr in c("REClow","REClowmed")){
     pivot_longer(c(q95, q50), names_to = "interval", values_to = "range") %>%
     ggplot(aes(x = size)) +
     geom_line(aes(y = range, linetype = interval, colour = risk)) +
-    facet_grid(Ass~Rule, scales = "free_y")
+    facet_grid(Rule~Ass, scales = "free_y")
   ggsave(paste0(plot.dir,'/',rr,"quantiles_risks.png"))
   
 }
@@ -243,19 +243,19 @@ for (rr in c("REClow","REClowmed")){
   ggplot(aux, aes(size, me, col=risk))+
     geom_point()+
     geom_line()+
-    facet_grid(Ass~Rule)
+    facet_grid(Rule~Ass)
   ggsave(paste0(plot.dir,'/',rr,"me.png"))
   
   ggplot(aux, aes(size, rmse, col=risk))+
     geom_point()+
     geom_line()+
-    facet_grid(Ass~Rule)
+    facet_grid(Rule~Ass)
   ggsave(paste0(plot.dir,'/',rr,"rmse.png"))
   
   ggplot(aux, aes(size, cv, col=risk))+
     geom_point()+
     geom_line()+
-    facet_grid(Ass~Rule)
+    facet_grid(Rule~Ass)
   ggsave(paste0(plot.dir,'/',rr,"cv.png"))
   
 }
