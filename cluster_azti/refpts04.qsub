@@ -1,5 +1,7 @@
 #!/bin/bash
 #$ -cwd
+#$ -o qsub_out/job-$JOB_ID_task-$TASK_ID.stdout
+#$ -e qsub_out/job-$JOB_ID_task-$TASK_ID.stderr
 #$ -S /bin/bash
 . /etc/profile
 # module add R
