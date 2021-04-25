@@ -71,12 +71,98 @@ df <- reshape(df, idvar=c("period","scenario","Ass","Rule","Rec","INN","OER"), v
 
 #period as an ordered factor for the figures
 
-df$period <- factor(df$period, levels=c("initial","short","last","all"))
+df$period <- factor(df$period, levels=c("initial","short","med","last","all"))
 
 #Rule as an ordered factor for the figures
-df$Rule <- factor(df$Rule, levels=c("HCR8", "HCR9", "HCR10","HCR7", "HCR0", "HCR11"))
+df$Rule <- factor(df$Rule, levels=c("HCR7","HCR14", "HCR13","HCR8", "HCR9", "HCR10","HCR0", "HCR11"))
 
 row.names(df) <- NULL
+
+
+#==============================================================================
+# Summary plots
+#==============================================================================
+
+#summary plot for Median B1plus
+ggplot(subset(df, indicator == 'Median_B1plus' & Ass=="ASSss3"),aes(x=Rule,y=period))+
+  geom_tile(aes(fill=cut(value/1000, breaks = c(-Inf, 196, 253,337,446,Inf))))+
+  facet_grid(.~Rec)+
+  geom_text(aes(label=round(value/1000,0)),show.legend =F,size=2) +
+  scale_fill_manual(values=c("#D7191C","#FDAE61", "#FFFFBF" ,"#A6D96A", "#1A9641"),
+                    name='B1plus (kt)', drop = F, guide = "coloursteps")+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
+  scale_x_discrete(labels=c('HCR0'="ICES_med", 'HCR10'="HCR50", 
+                            'HCR11'="ICES_low", 'HCR7'="HCR0" ,'HCR8'= "HCR40", 'HCR9'="HCR45", 'HCR13'="HCR35",'HCR14'="HCR30"))
+ggsave(file.path(plot.dir,paste0("SummaryScenarios_Biomass.png")),height = 4,width = 7)
+
+#summary plot for catch
+ggplot(subset(df, indicator == 'Median_Catch' & Ass=="ASSss3"),aes(x=Rule,y=period))+
+  geom_tile(aes(fill=cut(value/1000, breaks = c(-Inf,30, 35,40,45,50,Inf))))+
+  facet_grid(.~Rec)+
+  geom_text(aes(label=round(value/1000,0)),show.legen=F) +
+  scale_fill_manual(values=c("#FFFFCC", "#D9F0A3" ,"#ADDD8E", "#78C679", "#31A354", "#006837"),
+                    name='Catch (kt)', drop = F, guide = "coloursteps")+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
+  scale_x_discrete(labels=c('HCR0'="ICES_med", 'HCR10'="HCR50", 
+                            'HCR11'="ICES_low", 'HCR7'="HCR0" ,'HCR8'= "HCR40", 'HCR9'="HCR45", 'HCR13'="HCR35",'HCR14'="HCR30"))
+ggsave(file.path(plot.dir,paste0("SummaryScenarios_Catch.png")),height = 4,width = 7)
+#summary plot for IAV
+ggplot(subset(df, indicator == 'IAV1_Catch' & Ass=="ASSss3"),aes(x=Rule,y=period))+
+  geom_tile(aes(fill=cut(value/1000, breaks = c(-Inf,5,10,15,Inf))))+
+  facet_grid(.~Rec)+
+  geom_text(aes(label=round(value/1000,0)),show.legend=F) +
+  scale_fill_manual(values=c("#FFFFB2" ,"#FECC5C" ,"#FD8D3C" ,"#E31A1C"),
+                    name='Catch (kt)', drop = F, guide = "coloursteps")+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
+  scale_x_discrete(labels=c('HCR0'="ICES_med", 'HCR10'="HCR50", 
+                            'HCR11'="ICES_low", 'HCR7'="HCR0" ,'HCR8'= "HCR40", 'HCR9'="HCR45", 'HCR13'="HCR35",'HCR14'="HCR30"))
+ggsave(file.path(plot.dir,paste0("SummaryScenarios_IAV.png")),height = 4,width = 7)
+
+#summary plot for Risk3
+
+ggplot(subset(df, indicator == 'max_P_B1plus_Blow' & Ass=="ASSss3"),aes(x=Rule,y=period))+
+  geom_tile(aes(fill=cut(value*100, breaks = c(-Inf,3,4,5,Inf))))+
+  facet_grid(.~Rec)+
+  geom_text(aes(label=round(value*100,1)),show.legend=F) +
+  scale_fill_manual(values = c( "#1A9641","#A6D96A" ,"#FDAE61","#D7191C" ),name='Risk3', drop = F, guide = "coloursteps")+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
+  scale_x_discrete(labels=c('HCR0'="ICES_med", 'HCR10'="HCR50", 
+                            'HCR11'="ICES_low", 'HCR7'="HCR0" ,'HCR8'= "HCR40", 'HCR9'="HCR45", 'HCR13'="HCR35",'HCR14'="HCR30"))
+ggsave(file.path(plot.dir,paste0("SummaryScenarios_Risk3Blow.png")),height = 4,width = 7)
+
+
+ggplot(subset(df, indicator == 'max_P_B1plus_Blim' & Ass=="ASSss3"),aes(x=Rule,y=period))+
+  geom_tile(aes(fill=cut(value*100, breaks = c(-Inf,3,4,5,Inf))))+
+  facet_grid(.~Rec)+
+  geom_text(aes(label=round(value*100,1)),show.legend=F) +
+  scale_fill_manual(values = c( "#1A9641","#A6D96A" ,"#FDAE61","#D7191C" ),name='Risk3', drop = F, guide = "coloursteps")+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
+  scale_x_discrete(labels=c('HCR0'="ICES_med", 'HCR10'="HCR50", 
+                            'HCR11'="ICES_low", 'HCR7'="HCR0" ,'HCR8'= "HCR40", 'HCR9'="HCR45", 'HCR13'="HCR35",'HCR14'="HCR30"))
+ggsave(file.path(plot.dir,paste0("SummaryScenarios_Risk3Blim.png")),height = 4,width = 7)
+
+#summary plot for Risk1
+ggplot(subset(df, indicator == 'avg_P_B1plus_Blow' & Ass=="ASSss3"),aes(x=Rule,y=period))+
+  geom_tile(aes(fill=cut(value*100, breaks = c(-Inf,3,4,5,Inf))))+
+  facet_grid(.~Rec)+
+  geom_text(aes(label=round(value*100,1)),show.legend=F) +
+  scale_fill_manual(values = c( "#1A9641","#A6D96A" ,"#FDAE61","#D7191C" ),name='Risk1', drop = F, guide = "coloursteps")+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
+  scale_x_discrete(labels=c('HCR0'="ICES_med", 'HCR10'="HCR50", 
+                            'HCR11'="ICES_low", 'HCR7'="HCR0" ,'HCR8'= "HCR40", 'HCR9'="HCR45", 'HCR13'="HCR35",'HCR14'="HCR30"))
+ggsave(file.path(plot.dir,paste0("SummaryScenarios_Risk1Blow.png")),height = 4,width = 7)
+
+ggplot(subset(df, indicator == 'avg_P_B1plus_Blim' & Ass=="ASSss3"),aes(x=Rule,y=period))+
+  geom_tile(aes(fill=cut(value*100, breaks = c(-Inf,3,4,5,Inf))))+
+  facet_grid(.~Rec)+
+  geom_text(aes(label=round(value*100,1)),show.legend=F) +
+  scale_fill_manual(values = c( "#1A9641","#A6D96A" ,"#FDAE61","#D7191C" ),name='Risk1', drop = F, guide = "coloursteps")+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
+  scale_x_discrete(labels=c('HCR0'="ICES_med", 'HCR10'="HCR50", 
+                            'HCR11'="ICES_low", 'HCR7'="HCR0" ,'HCR8'= "HCR40", 'HCR9'="HCR45", 'HCR13'="HCR35",'HCR14'="HCR30"))
+ggsave(file.path(plot.dir,paste0("SummaryScenarios_Risk1Blim.png")),height = 4,width = 7)
+
+
 
 #==============================================================================
 # comparison of several performance statistics 

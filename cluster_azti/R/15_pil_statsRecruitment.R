@@ -286,11 +286,11 @@ aux <- subset(df, indicator %in% c("Risk1_meanR_low", "Risk1_Q975_low",
                                    "Risk1_rec2019"))
 facet_names <- c("Risk1_meanR_low" = "mR_low", "Risk1_Q975_low" ="q975_low", 
                  "Risk1_meanR_med" = "R_med" , "Risk1_Q975_med" = "q975_med",
-                 "Risk1_rec2019" = "R2019" )
+                 "Risk1_rec2019" = "R2019", 'REClow' = 'REClow', 'REClowmed'= 'REClowmed','RECmix'='RECmix' )
 
 ggplot(aux, aes(x=period, y=value*100, col = Rec))+
   geom_point()+
-  facet_grid(indicator ~ ., scale="free_y", labeller = as_labeller(facet_names)) +
+  facet_grid(indicator ~ Rec, scale="free_y", labeller = as_labeller(facet_names)) +
   ylab("Probability")
 ggsave(file.path(plot.dir,"compare_RiskRec.png"), height=4)
 

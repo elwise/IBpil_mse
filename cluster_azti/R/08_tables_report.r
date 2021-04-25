@@ -48,22 +48,27 @@ df$Rec <- ordered(df$Rec, c("REClow","REClowmed","RECmix"))
 
 # tables for the report NO ASSESSMENT
 
-aux <- df %>% subset(Rule %in% c("HCR8","HCR9","HCR10") & Ass=="ASSnone") %>%
+aux <- df %>% subset(Rule %in% c("HCR14","HCR13","HCR8","HCR9","HCR10") & Ass=="ASSnone") %>%
   group_by(Rec, Rule) %>%
   summarise(round(Median_B1plus[period=="initial"]/1000,0),
             round(Median_B1plus[period=="short"]/1000,0),
+            round(Median_B1plus[period=="med"]/1000,0),
             round(Median_B1plus[period=="last"]/1000,0),
             round(Median_F[period=="initial"],3),
             round(Median_F[period=="short"],3),
+            round(Median_F[period=="med"],3),
             round(Median_F[period=="last"],3),
             round(Median_Catch[period=="initial"]/1000,0),
             round(Median_Catch[period=="short"]/1000,0),
+            round(Median_Catch[period=="med"]/1000,0),
             round(Median_Catch[period=="last"]/1000,0),
             round(IAV1_Catch[period=="initial"]/1000,0),
             round(IAV1_Catch[period=="short"]/1000,0),
+            round(IAV1_Catch[period=="med"]/1000,0),
             round(IAV1_Catch[period=="last"]/1000,0),
             round(closure[period=="initial"]*100,0),
             round(closure[period=="short"]*100,0),
+            round(closure[period=="med"]*100,0),
             round(closure[period=="last"]*100,0),
             #round(P_B1plus_0.8Blim[period=="initial"]*100,0),
             #round(P_B1plus_0.8Blow[period=="initial"]*100,0),
@@ -74,7 +79,7 @@ aux <- df %>% subset(Rule %in% c("HCR8","HCR9","HCR10") & Ass=="ASSnone") %>%
             round(max_P_B1plus_Blim[period=="last"]*100,0),
             round(max_P_B1plus_Blow[period=="last"]*100,0)
   )
-write.table(t(aux), file=file.path(res.dir, "table_report_HCR8&9&10_ASSnone.csv"), sep=";", col.names=F)
+write.table(t(aux), file=file.path(res.dir, "table_report_HCR8to14_ASSnone.csv"), sep=";", col.names=F)
 
 aux <- df %>% subset(Rule %in% c("HCR7") & Ass=="ASSnone") %>%
   group_by(Rec, Rule) %>%
@@ -134,33 +139,40 @@ write.table(t(aux), file=file.path(res.dir, "table_report_HCR0&HCR11_ASSnone.csv
 
 # tables for the report WITH ASSESSMENT
 
-aux <- df %>% subset(Rule %in% c("HCR8","HCR9","HCR10") & Ass=="ASSss3") %>%
+aux <- df %>% subset(Rule %in% c("HCR14","HCR13","HCR8","HCR9","HCR10") & Ass=="ASSss3") %>%
   group_by(Rec, Rule) %>%
   summarise(round(Median_B1plus[period=="initial"]/1000,0),
             round(Median_B1plus[period=="short"]/1000,0),
+            round(Median_B1plus[period=="med"]/1000,0),
             round(Median_B1plus[period=="last"]/1000,0),
             round(Median_F[period=="initial"],3),
             round(Median_F[period=="short"],3),
+            round(Median_F[period=="med"],3),
             round(Median_F[period=="last"],3),
             round(Median_Catch[period=="initial"]/1000,0),
             round(Median_Catch[period=="short"]/1000,0),
+            round(Median_Catch[period=="med"]/1000,0),
             round(Median_Catch[period=="last"]/1000,0),
             round(IAV1_Catch[period=="initial"]/1000,0),
             round(IAV1_Catch[period=="short"]/1000,0),
+            round(IAV1_Catch[period=="med"]/1000,0),
             round(IAV1_Catch[period=="last"]/1000,0),
             round(closure[period=="initial"]*100,0),
             round(closure[period=="short"]*100,0),
+            round(closure[period=="med"]*100,0),
             round(closure[period=="last"]*100,0),
-            #round(P_B1plus_0.8Blim[period=="initial"]*100,0),
-            #round(P_B1plus_0.8Blow[period=="initial"]*100,0),
-            #round(firstyear_B1plus_0.8Blim[period=="all"],0),
-            #round(firstyear_B1plus_0.8Blow[period=="all"],0),
             round(firstyear_B1plus_Blim[period=="all"],0),
             round(firstyear_B1plus_Blow[period=="all"],0),
-            round(max_P_B1plus_Blim[period=="last"]*100,0),
-            round(max_P_B1plus_Blow[period=="last"]*100,0)
+            round(avg_P_B1plus_Blim[period=="initial"]*100,1),
+            round(avg_P_B1plus_Blow[period=="initial"]*100,1),
+            round(avg_P_B1plus_Blim[period=="short"]*100,1),
+            round(avg_P_B1plus_Blow[period=="short"]*100,1),
+            round(max_P_B1plus_Blim[period=="initial"]*100,1),
+            round(max_P_B1plus_Blow[period=="short"]*100,1),
+            round(max_P_B1plus_Blim[period=="med"]*100,1),
+            round(max_P_B1plus_Blow[period=="last"]*100,1)
   )
-write.table(t(aux), file=file.path(res.dir, "table_report_HCR8&9&10_ASSss3.csv"), sep=";", col.names=F)
+write.table(t(aux), file=file.path(res.dir, "table_report_HCR8to14_ASSss3.csv"), sep=";", col.names=F)
 
 
 aux <- df %>% subset(Rule %in% c("HCR7") & Ass=="ASSss3") %>%

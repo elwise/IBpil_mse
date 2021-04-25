@@ -59,7 +59,7 @@ theme_set(
 dfyr <- read.table(file.path(res.dir,"stats_byyr.csv"), header=T, sep=";")
 
 #select only variables of interest
-dfyr <- dfyr[,c(1:7,32:37,23:25,11:13)]
+dfyr <- dfyr[,c(1:7,9,19,29,10,20,30,11,21,31,13,23,33)]
 #change units of variables of interest
 dfyr[,c(8:10)] <- dfyr[,c(8:10)]/1000000
 dfyr[,c(11:13)] <- dfyr[,c(11:13)]/1000
@@ -77,7 +77,7 @@ dfyr%>%
 
 dfyr %>%
   dplyr::select(-scenario, -q05, -q95,-OER) %>%
-  spread(Ass, q50) %>%
+  tidyr::spread_('Ass', 'q50') %>%
   mutate(ss3_relbias = (ASSss3 - ASSnone) / ASSnone) %>%
   as.data.frame -> relbias
 
@@ -85,16 +85,18 @@ dfyr %>%
 relbias <- subset(relbias, indicator %in% c("ssb","f"))
 
 ##PLOTS for ASSss3 comparison with ASSnone
-facet_names <- c('catch'= "Catch",'f'="Fbar",'rec'="Rec",'ssb'="B1+", 'HCR0'="HCR0", 'HCR10'="HCR10", 
-                 'HCR11'="HCR11", 'HCR7'="HCR7" ,'HCR8'= "HCR8", 'HCR9'="HCR9")
+facet_names <- c('catch'= "Catch",'f'="Fbar",'rec'="Rec",'ssb'="B1+", 'HCR0'="ICES_med", 'HCR10'="HCR50", 
+                 'HCR11'="ICES_low", 'HCR7'="HCR0" ,'HCR8'= "HCR40", 'HCR9'="HCR45", 'HCR13'="HCR35",'HCR14'="HCR30")
 #make sure order of variables is ssb and then f
 relbias$indicator2 <- factor(relbias$indicator, levels=c("ssb","f"))
+
+relbias$Rule <- factor(relbias$Rule, levels=c("HCR14", "HCR13","HCR8", "HCR9", "HCR10","HCR7", "HCR0", "HCR11"))
 
 ###Rule 0 and 11
 aux.rule <- subset(relbias, Rule %in% c('HCR0','HCR11'))
 aux.rule$ss3_relbias[!is.finite(aux.rule$ss3_relbias)] <- NA
 
-p <- ggplot(data=aux.rule,aes(x = year, y = ss3_relbias, colour = Rec)) +
+ggplot(data=aux.rule,aes(x = year, y = ss3_relbias, colour = Rec)) +
   geom_line() + ylab("ASSss3 relative to ASSnone")+
   scale_x_continuous(name="Year",breaks = seq(1978,2070,5))+
   facet_grid(indicator2~Rule,scales="free",labeller = as_labeller(facet_names))+
@@ -102,23 +104,23 @@ p <- ggplot(data=aux.rule,aes(x = year, y = ss3_relbias, colour = Rec)) +
                         labels=c("Low", "LowMed","Mix"))
 ggsave(paste0(plot.dir,'/',"relHCR0&HCR11.png"))
 
-###Rule 8,9,10 
-aux.rule <- subset(relbias, Rule %in% c('HCR8','HCR9','HCR10'))
+###Rule 8 to 14
+aux.rule <- subset(relbias, Rule %in% c('HCR14','HCR13','HCR8','HCR9','HCR10'))
 aux.rule$ss3_relbias[!is.finite(aux.rule$ss3_relbias)] <- NA
 
-p <- ggplot(data=aux.rule,aes(x = year, y = ss3_relbias, colour = Rec)) +
+ggplot(data=aux.rule,aes(x = year, y = ss3_relbias, colour = Rec)) +
   geom_line() + ylab("ASSss3 relative to ASSnone")+
   scale_x_continuous(name="Year",breaks = seq(1978,2070,5))+
   facet_grid(indicator2~Rule,scales="free",labeller = as_labeller(facet_names))+
   scale_colour_discrete(name="Recruitment",breaks=c("REClow", "REClowmed","RECmix"),
                         labels=c("Low", "LowMed","Mix"))
-ggsave(paste0(plot.dir,'/',"relHCR8&HCR9&HCR10.png"))
+ggsave(paste0(plot.dir,'/',"relHCR8to14.png"))
 
 ###Rule 7 
 aux.rule <- subset(relbias, Rule %in% c('HCR7') & indicator2=='ssb')
 aux.rule$ss3_relbias[!is.finite(aux.rule$ss3_relbias)] <- NA
 
-p <- ggplot(data=aux.rule,aes(x = year, y = ss3_relbias, colour = Rec)) +
+ggplot(data=aux.rule,aes(x = year, y = ss3_relbias, colour = Rec)) +
   geom_line() + ylab("ASSss3 relative to ASSnone")+
   scale_x_continuous(name="Year",breaks = seq(1978,2070,5))+
   facet_grid(indicator2~Rule,scales="free",labeller = as_labeller(facet_names))+
@@ -269,8 +271,10 @@ out.iters$indicator2 <- factor(out.iters$indicator,levels=c("rec","ssb","f","cat
 out.iters <- subset(out.iters,Ass=="ASSss3")
 
 ##Now for the plots
-facet_names <- c('catch'= "Catch",'f'="Fbar",'rec'="Rec",'ssb'="B1+", 'HCR0'="HCR0", 'HCR10'="HCR10", 
-                 'HCR11'="HCR11", 'HCR7'="HCR7" ,'HCR8'= "HCR8", 'HCR9'="HCR9")
+facet_names <- c('catch'= "Catch",'f'="Fbar",'rec'="Rec",'ssb'="B1+", 'HCR0'="ICES_med", 'HCR10'="HCR50", 
+                 'HCR11'="ICES_low", 'HCR7'="HCR0" ,'HCR8'= "HCR40", 'HCR9'="HCR45", 'HCR13'="HCR35",'HCR14'="HCR30",
+                 'REClow' = 'REClow', 'REClowmed'= 'REClowmed','RECmix'='RECmix' )
+
 ###For HCR7 
 gg <- subset(ww, Rule %in% c('HCR7'))
 aa <- subset(out.iters, Rule %in% c('HCR7'))
@@ -368,6 +372,54 @@ for (rr in c("REClow","REClowmed","RECmix")){
   ggsave(paste0(plot.dir,'/',rr,"_HCR10.png"),width = 3.92,height=6.65)
 }
 
+###For HCR14 
+gg <- subset(ww, Rule %in% c('HCR14'))
+aa <- subset(out.iters, Rule %in% c('HCR14'))
+
+for (rr in c("REClow","REClowmed","RECmix")){
+  aux <- subset(gg,Rec==rr)
+  aux.iters <- subset(aa,Rec==rr)
+  p <- ggplot(data=aux,aes(x=year, y=q50))+
+    geom_ribbon(data=aux,aes(ymin = q05, ymax = q95),alpha=0.2,show.legend = F,fill="#F9840044") +
+    geom_line(data=aux,color="#F98400")+
+    geom_line(data=subset(aux.iters,iter==45),color="green3",aes(x=year,y=value),alpha=0.6)+
+    geom_line(data=subset(aux.iters,iter==235),color="blue",aes(x=year,y=value),alpha=0.6)+
+    facet_grid(indicator2~Rule,scales="free",labeller = as_labeller(facet_names))+
+    geom_vline(xintercept = 2020, linetype = "dotted",color="#00A08A")+
+    ylab("") +
+    scale_x_continuous(name="Year",breaks = seq(1978,2070,5))+
+    scale_y_continuous(breaks=scales::pretty_breaks(n = 6))
+  
+  
+  p + geom_hline(aes(yintercept = 337.448), data = subset(gg, indicator=="ssb"),linetype="dashed",color="#00A08A") +
+    geom_hline(aes(yintercept = 196.334), data = subset(gg,indicator=="ssb"),linetype="dashed",color="#00A08A")
+  ggsave(paste0(plot.dir,'/',rr,"_HCR14.png"),width = 3.92,height=6.65)
+}
+
+###For HCR13 
+gg <- subset(ww, Rule %in% c('HCR13'))
+aa <- subset(out.iters, Rule %in% c('HCR13'))
+
+for (rr in c("REClow","REClowmed","RECmix")){
+  aux <- subset(gg,Rec==rr)
+  aux.iters <- subset(aa,Rec==rr)
+  p <- ggplot(data=aux,aes(x=year, y=q50))+
+    geom_ribbon(data=aux,aes(ymin = q05, ymax = q95),alpha=0.2,show.legend = F,fill="#F9840044") +
+    geom_line(data=aux,color="#F98400")+
+    geom_line(data=subset(aux.iters,iter==45),color="green3",aes(x=year,y=value),alpha=0.6)+
+    geom_line(data=subset(aux.iters,iter==235),color="blue",aes(x=year,y=value),alpha=0.6)+
+    facet_grid(indicator2~Rule,scales="free",labeller = as_labeller(facet_names))+
+    geom_vline(xintercept = 2020, linetype = "dotted",color="#00A08A")+
+    ylab("") +
+    scale_x_continuous(name="Year",breaks = seq(1978,2070,5))+
+    scale_y_continuous(breaks=scales::pretty_breaks(n = 6))
+  
+  
+  p + geom_hline(aes(yintercept = 337.448), data = subset(gg, indicator=="ssb"),linetype="dashed",color="#00A08A") +
+    geom_hline(aes(yintercept = 196.334), data = subset(gg,indicator=="ssb"),linetype="dashed",color="#00A08A")
+  ggsave(paste0(plot.dir,'/',rr,"_HCR10.png"),width = 3.92,height=6.65)
+}
+
 ###For HCR0 
 gg <- subset(ww, Rule %in% c('HCR0'))
 aa <- subset(out.iters, Rule %in% c('HCR0'))
@@ -442,7 +494,7 @@ out.iters[,10] <- out.iters[,10]/1000000
 out.iters[,11] <- out.iters[,11]/1000
 out.iters[,14] <- out.iters[,14]/1000
 
-for (rule in c('HCR7','HCR8','HCR9','HCR10','HCR11','HCR0')){
+for (rule in c('HCR13','HCR14','HCR7','HCR8','HCR9','HCR10','HCR11','HCR0')){
   
 aux <- subset(out.iters, Rule==rule)
 
@@ -484,7 +536,7 @@ df <- successyr%>%
 
 df$Rec2 <- factor(df$Rec, levels=c("REClow","REClowmed","RECmix"))
 
-for (rule in c('HCR7','HCR8','HCR9','HCR10','HCR11','HCR0')){
+for (rule in c('HCR7','HCR8','HCR9','HCR10','HCR11','HCR0', 'HCR13','HCR14')){
 
 ss <- subset(df, Rule == rule & Ass=='ASSss3')
 
