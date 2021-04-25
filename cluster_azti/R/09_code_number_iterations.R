@@ -98,6 +98,7 @@ save(out.boot, file=file.path(".","output_long","out.boot4.RData"))
 
 out <- out.boot %>%
   select(scenario:risk3) %>% 
+  separate(scenario, into = c("Ass", "Rule", "Rec", "INN", "OER"), sep = "_",  remove=FALSE) %>% 
   pivot_longer(cols=starts_with("risk"),
              names_to = "risk",
              names_prefix = "risk", 
@@ -218,3 +219,37 @@ for (rr in c("REClow","REClowmed")){
   
 }
 
+#Plots  for ssb, f, catch, rec ------------------------------------------------------------------
+
+# from wide to long format for plotting
+dd <- out.boot[,c(1,2,6:9)] %>%
+  pivot_longer(!c(scenario,size),names_to = "indicator",values_to="value") %>%
+  separate(scenario, into = c("Ass", "Rule", "Rec", "INN", "OER"), sep = "_",  remove=FALSE)
+
+
+# compute median values for the maximum sampling size (we will assume this is our "best" guess)
+
+dd.med <- dd %>% 
+  filter(size==maxiter) %>% 
+  group_by(indicator, Ass,Rule, Rec) %>% 
+  summarise(med=median(value))
+
+  #By REC
+  for (ind in c("catch","ssb","rec","f")){
+    
+    ddff <- subset(dd, indicator == ind)
+    d.med <- subset(dd.med, indicator == ind)
+    
+    for (rr in c("REClow","REClowmed")){
+      aux <- subset(ddff,Rec==rr )
+      med <- subset(d.med, Rec == rr )
+    
+    ggplot(aux, aes(factor(size), value)) +
+      geom_boxplot() +
+      facet_grid(Ass~Rule, scales = "free_y") +
+      geom_hline(data=med, aes(yintercept=med)) +
+      theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+    ggsave(paste0(plot.dir,'/',rr,"_",ind, ".png"))
+    
+  }
+}
