@@ -68,6 +68,8 @@ get_scenario_risks_year <- function(sc) {
   ) %>% plyr::ldply()
 }
 
+
+
 out.stationarity <- lapply(scenario.list, get_scenario_risks_year) %>% plyr::ldply()
 
 # separate scenario
@@ -75,6 +77,15 @@ out.stationarity <- lapply(scenario.list, get_scenario_risks_year) %>% plyr::ldp
 out.stationarity <- out.stationarity %>%
   separate(scenario, into = c("Ass", "Rule", "Rec", "INN", "OER"), sep = "_",  remove=FALSE) %>% 
   mutate(size=as.factor(size))
+
+out.stationarity$scenario <- fct_recode(out.stationarity$scenario,"ASSnone_HCR50_REClowmed_INNvar_OERnone"="ASSnone_HCR10_REClowmed_INNvar_OERnone",
+           "ASSnone_ICES_low_REClowmed_INNvar_OERnone"="ASSnone_HCR11_REClowmed_INNvar_OERnone", 
+           "ASSnone_HCR40_REClow_INNvar_OERnone"="ASSnone_HCR8_REClow_INNvar_OERnone",
+           "ASSnone_HCR45_REClow_INNvar_OERnone"="ASSnone_HCR9_REClow_INNvar_OERnone",
+           "ASSss3_HCR50_REClowmed_INNvar_OERnaq"= "ASSss3_HCR10_REClowmed_INNvar_OERnaq",
+           "ASSss3_ICES_low_REClowmed_INNvar_OERnaq"="ASSss3_HCR11_REClowmed_INNvar_OERnaq",
+           "ASSss3_HCR40_REClow_INNvar_OERnaq"="ASSss3_HCR8_REClow_INNvar_OERnaq",
+           "ASSss3_HCR45_REClow_INNvar_OERnaq"='ASSss3_HCR9_REClow_INNvar_OERnaq')
 
 # plots for ssb distribution
 
@@ -88,7 +99,7 @@ out.stationarity %>%
              geom_line()+
              geom_ribbon(alpha=0.2)+
              facet_wrap(~size)+
-             ylab("SSB")+
+             ylab("SSB") +
              ggtitle(unique(.$scenario))))
 dev.off()
 

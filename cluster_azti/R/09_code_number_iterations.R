@@ -85,9 +85,10 @@ get_scenario_risks <- function(sc) {
 set.seed(100)
 
 # apply for each scenario
-
 out.boot <- lapply(scenario.list, get_scenario_risks) %>% plyr::ldply()
+
 names(out.boot) <- c("scenario","size", "risk1", "risk2", "risk3", "catch", "ssb", "rec", "f")
+
 out.boot <- out.boot %>%
   separate(scenario, into = c("Ass", "Rule", "Rec", "INN", "OER"), sep = "_",  remove=FALSE)  
 
@@ -111,8 +112,12 @@ out.med <- out %>%
   group_by(risk, Ass, Rule, Rec) %>% 
   summarise(med=median(value))
 
+
 # Plots for risk ----------------------------------------------------------
 
+facet_names <- c('catch'= "Catch",'f'="Fbar",'rec'="Rec",'ssb'="B1+", 'HCR0'="ICES_med", 'HCR10'="HCR50", 
+                 'HCR11'="ICES_low", 'HCR7'="HCR0" ,'HCR8'= "HCR40", 'HCR9'="HCR45", 'HCR13'="HCR35",'HCR14'="HCR30",
+                 'REClow' = 'REClow', 'REClowmed'= 'REClowmed','RECmix'='RECmix', 'ASSnone'= 'ASSnone','ASSss3'='ASSss3' )
 
 # By REC
 
@@ -122,10 +127,11 @@ for (rr in c("REClow","REClowmed")){
   
   ggplot(aux, aes(factor(size), value, fill=risk)) +
     geom_boxplot() +
-    facet_grid(Rule~Ass, scales = "free_y") +
-    #geom_hline(aes(yintercept=0.05),linetype="dashed", size=0.9) +
+    facet_grid(Rule~Ass, scales = "free_y",labeller = as_labeller(facet_names)) +
     geom_hline(data=med, aes(yintercept=med, col=risk)) +
-    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+    geom_hline(yintercept = 0.05, linetype='dashed')+
+    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
+    scale_x_discrete(name = 'Sample size', breaks=scales::pretty_breaks(n = 8))
   ggsave(paste0(plot.dir,'/',rr,"_risks.png"))
   
 }
@@ -140,7 +146,8 @@ for (rr in c("REClow","REClowmed")){
     pivot_longer(c(q95, q50), names_to = "interval", values_to = "range") %>%
     ggplot(aes(x = size)) +
     geom_line(aes(y = range, linetype = interval, colour = risk)) +
-    facet_grid(Rule~Ass, scales = "free_y")
+    facet_grid(Rule~Ass, scales = "free_y",labeller = as_labeller(facet_names))+
+    scale_x_discrete(name = 'Sample size', breaks=scales::pretty_breaks(n = 8))
   ggsave(paste0(plot.dir,'/',rr,"_quantiles_risks.png"))
   
 }
@@ -163,19 +170,19 @@ for (rr in c("REClow","REClowmed")){
   ggplot(aux, aes(size, me, col=risk))+
     geom_point()+
     geom_line()+
-    facet_grid(Rule~Ass)
+    facet_grid(Rule~Ass,labeller = as_labeller(facet_names))
   ggsave(paste0(plot.dir,'/',rr,"_me.png"))
   
   ggplot(aux, aes(size, rmse, col=risk))+
     geom_point()+
     geom_line()+
-    facet_grid(Rule~Ass)
+    facet_grid(Rule~Ass,labeller = as_labeller(facet_names))
   ggsave(paste0(plot.dir,'/',rr,"_rmse.png"))
   
   ggplot(aux, aes(size, cv, col=risk))+
     geom_point()+
     geom_line()+
-    facet_grid(Rule~Ass)
+    facet_grid(Rule~Ass,labeller = as_labeller(facet_names))
   ggsave(paste0(plot.dir,'/',rr,"_cv.png"))
   
 }
@@ -187,69 +194,73 @@ for (rr in c("REClow","REClowmed")){
   aux <- subset(out.boot, Rec==rr)
   aux0 <- aux %>%
     group_by(scenario, Rule, Ass) %>% 
-    summarise(across(catch:f, median))
+    summarise_at(c('catch','ssb','rec','f'), median,na.rm=T)
   
   ggplot(aux, aes(factor(size), ssb)) +
     geom_boxplot() +
-    facet_wrap(Rule~Ass, scales = "free_y") +
+    facet_wrap(Rule~Ass, scales = "free_y",labeller = as_labeller(facet_names)) +
     geom_hline(data=aux0, aes(yintercept=ssb), lwd=1)+
-    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
+    scale_x_discrete(name = 'Sample size', breaks=scales::pretty_breaks(n = 8))
   ggsave(paste0(plot.dir,'/',rr,"_ssb.png"))
   
   ggplot(aux, aes(factor(size), catch)) +
     geom_boxplot() +
-    facet_wrap(Rule~Ass, scales = "free_y") +
+    facet_wrap(Rule~Ass, scales = "free_y",labeller = as_labeller(facet_names)) +
     geom_hline(data=aux0, aes(yintercept=catch), lwd=1)+
-    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
+    scale_x_discrete(name = 'Sample size', breaks=scales::pretty_breaks(n = 8))
   ggsave(paste0(plot.dir,'/',rr,"_catch.png"))
   
   ggplot(aux, aes(factor(size), rec)) +
     geom_boxplot() +
-    facet_wrap(Rule~Ass, scales = "free_y") +
+    facet_wrap(Rule~Ass, scales = "free_y",labeller = as_labeller(facet_names)) +
     geom_hline(data=aux0, aes(yintercept=rec), lwd=1)+
-    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
+    scale_x_discrete(name = 'Sample size', breaks=scales::pretty_breaks(n = 8))
   ggsave(paste0(plot.dir,'/',rr,"_rec.png"))
   
   ggplot(aux, aes(factor(size), f)) +
     geom_boxplot() +
-    facet_wrap(Rule~Ass, scales = "free_y") +
+    facet_wrap(Rule~Ass, scales = "free_y",labeller = as_labeller(facet_names)) +
     geom_hline(data=aux0, aes(yintercept=f), lwd=1)+
-    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
+    scale_x_discrete(name = 'Sample size', breaks=scales::pretty_breaks(n = 8))
   ggsave(paste0(plot.dir,'/',rr,"_f.png"))
   
 }
 
-#Plots  for ssb, f, catch, rec ------------------------------------------------------------------
-
-# from wide to long format for plotting
-dd <- out.boot[,c(1,2,6:9)] %>%
-  pivot_longer(!c(scenario,size),names_to = "indicator",values_to="value") %>%
-  separate(scenario, into = c("Ass", "Rule", "Rec", "INN", "OER"), sep = "_",  remove=FALSE)
-
-
-# compute median values for the maximum sampling size (we will assume this is our "best" guess)
-
-dd.med <- dd %>% 
-  filter(size==maxiter) %>% 
-  group_by(indicator, Ass,Rule, Rec) %>% 
-  summarise(med=median(value))
-
-  #By REC
-  for (ind in c("catch","ssb","rec","f")){
-    
-    ddff <- subset(dd, indicator == ind)
-    d.med <- subset(dd.med, indicator == ind)
-    
-    for (rr in c("REClow","REClowmed")){
-      aux <- subset(ddff,Rec==rr )
-      med <- subset(d.med, Rec == rr )
-    
-    ggplot(aux, aes(factor(size), value)) +
-      geom_boxplot() +
-      facet_grid(Ass~Rule, scales = "free_y") +
-      geom_hline(data=med, aes(yintercept=med)) +
-      theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
-    ggsave(paste0(plot.dir,'/',rr,"_",ind, ".png"))
-    
-  }
-}
+# #Plots  for ssb, f, catch, rec ------------------------------------------------------------------
+# 
+# # from wide to long format for plotting
+# dd <- out.boot[,c(1,2,6:9)] %>%
+#   pivot_longer(!c(scenario,size),names_to = "indicator",values_to="value") %>%
+#   separate(scenario, into = c("Ass", "Rule", "Rec", "INN", "OER"), sep = "_",  remove=FALSE)
+# 
+# 
+# # compute median values for the maximum sampling size (we will assume this is our "best" guess)
+# 
+# dd.med <- dd %>% 
+#   filter(size==maxiter) %>% 
+#   group_by(indicator, Ass,Rule, Rec) %>% 
+#   summarise(med=median(value))
+# 
+#   #By REC
+#   for (ind in c("catch","ssb","rec","f")){
+#     
+#     ddff <- subset(dd, indicator == ind)
+#     d.med <- subset(dd.med, indicator == ind)
+#     
+#     for (rr in c("REClow","REClowmed")){
+#       aux <- subset(ddff,Rec==rr )
+#       med <- subset(d.med, Rec == rr )
+#     
+#     ggplot(aux, aes(factor(size), value)) +
+#       geom_boxplot() +
+#       facet_grid(Ass~Rule, scales = "free_y") +
+#       geom_hline(data=med, aes(yintercept=med)) +
+#       theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))
+#     ggsave(paste0(plot.dir,'/',rr,"_",ind, ".png"))
+#     
+#   }
+# }

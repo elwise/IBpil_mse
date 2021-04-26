@@ -23,6 +23,15 @@ setwd(wd)
 
 load(file.path(wd,"output","res_bio_all.RData"))
 
+dat.bio.q$scenario <- gsub('HCR10_', 'HCR50_', dat.bio.q$scenario)
+dat.bio.q$scenario <- gsub('HCR9_', 'HCR45_', dat.bio.q$scenario)
+dat.bio.q$scenario <- gsub('HCR8_', 'HCR40_', dat.bio.q$scenario)
+dat.bio.q$scenario <- gsub('HCR11_', 'ICES_low_', dat.bio.q$scenario)
+dat.bio.q$scenario <- gsub('HCR0_', 'ICES_med_', dat.bio.q$scenario)
+dat.bio.q$scenario <- gsub('HCR7_', 'HCR0_', dat.bio.q$scenario)
+dat.bio.q$scenario <- gsub('HCR13_', 'HCR35_', dat.bio.q$scenario)
+dat.bio.q$scenario <- gsub('HCR14_', 'HCR30_', dat.bio.q$scenario)
+
 # ssb
 
 pdf(file.path(wd,"output","plots","stationarity_ssb.pdf"), width=9)
@@ -85,6 +94,12 @@ dev.off()
 # read the quantile summary file:
 
 load(file.path(wd,"output_long","res_bio_all.RData"))
+
+dat.bio.q$scenario <- gsub('HCR10_', 'HCR50_', dat.bio.q$scenario)
+dat.bio.q$scenario <- gsub('HCR9_', 'HCR45_', dat.bio.q$scenario)
+dat.bio.q$scenario <- gsub('HCR8_', 'HCR40_', dat.bio.q$scenario)
+dat.bio.q$scenario <- gsub('HCR11_', 'ICES_low_', dat.bio.q$scenario)
+
 
 # ssb
 
