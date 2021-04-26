@@ -98,7 +98,7 @@ aux.rule$ss3_relbias[!is.finite(aux.rule$ss3_relbias)] <- NA
 
 ggplot(data=aux.rule,aes(x = year, y = ss3_relbias, colour = Rec)) +
   geom_line() + ylab("ASSss3 relative to ASSnone")+
-  scale_x_continuous(name="Year",breaks = seq(1978,2070,5))+
+  scale_x_continuous(name="Year",breaks = seq(2020,2070,10))+
   facet_grid(indicator2~Rule,scales="free",labeller = as_labeller(facet_names))+
   scale_colour_discrete(name="Recruitment",breaks=c("REClow", "REClowmed","RECmix"),
                         labels=c("Low", "LowMed","Mix"))
@@ -110,10 +110,11 @@ aux.rule$ss3_relbias[!is.finite(aux.rule$ss3_relbias)] <- NA
 
 ggplot(data=aux.rule,aes(x = year, y = ss3_relbias, colour = Rec)) +
   geom_line() + ylab("ASSss3 relative to ASSnone")+
-  scale_x_continuous(name="Year",breaks = seq(1978,2070,5))+
+  scale_x_continuous(name="Year",breaks = seq(2020,2070,10))+
   facet_grid(indicator2~Rule,scales="free",labeller = as_labeller(facet_names))+
   scale_colour_discrete(name="Recruitment",breaks=c("REClow", "REClowmed","RECmix"),
-                        labels=c("Low", "LowMed","Mix"))
+                        labels=c("Low", "LowMed","Mix"))+
+  theme(axis.text=element_text(size=8))
 ggsave(paste0(plot.dir,'/',"relHCR8to14.png"))
 
 ###Rule 7 
@@ -122,105 +123,11 @@ aux.rule$ss3_relbias[!is.finite(aux.rule$ss3_relbias)] <- NA
 
 ggplot(data=aux.rule,aes(x = year, y = ss3_relbias, colour = Rec)) +
   geom_line() + ylab("ASSss3 relative to ASSnone")+
-  scale_x_continuous(name="Year",breaks = seq(1978,2070,5))+
+  scale_x_continuous(name="Year",breaks = seq(2020,2070,10))+
   facet_grid(indicator2~Rule,scales="free",labeller = as_labeller(facet_names))+
   scale_colour_discrete(name="Recruitment",breaks=c("REClow", "REClowmed","RECmix"),
                         labels=c("Low", "LowMed","Mix"))
 ggsave(paste0(plot.dir,'/',"relHCR7.png"))
-
-# ############
-# # Estimate 90% confidence interval for historical assessment
-# ############
-# 
-# dir2020 <- c("D:/IPMA/SARDINE/WGHANSA2020/SS3/retrospective/2020/")
-# 
-# 
-# #read ouputs and create database for ggplots
-#   mydir <- dir2020
-# 
-#   setwd(mydir)
-# 
-#   out.ss3<-SS_output(mydir,forecast=FALSE,ncols=45)
-#   dados<-SS_readdat(paste(mydir,"data.ss_new",sep=""), verbose = TRUE, echoall = FALSE, section = NULL,version = "3.30")
-#   selectivity<-subset(out.ss3$ageselex[out.ss3$ageselex$Fleet==1 & out.ss3$ageselex$Factor=="Asel2" & out.ss3$ageselex$Yr %in% c(out.ss3$startyr:(out.ss3$endyr)),c("Yr","0","1","2","3","4","5","6") ])
-# 
-#   colnames(selectivity)[1]<-"year"
-# 
-#   sel<-melt(selectivity,id.vars='year')
-# 
-#   sel_bar<-rowMeans(selectivity[,4:7])
-# 
-#   startyr <- out.ss3$startyr
-#   endyr <- out.ss3$endyr
-#   aux <- out.ss3$derived_quants
-#   idx <- match(paste("F_",startyr:(endyr-1),sep=""), aux[,1])
-#   aux <- aux[idx, ]
-# 
-#   Fbar.dat <- data.frame(Year=startyr:(endyr-1),
-#                          Value=aux$Value*sel_bar[-length(sel_bar)],
-#                          CV=aux$StdDev/aux$Value*sel_bar[-length(sel_bar)],
-#                          Lower=(aux$Value*sel_bar[-length(sel_bar)])-2*aux$StdDev,
-#                          Upper=(aux$Value*sel_bar[-length(sel_bar)])+2*aux$StdDev,
-#                          #sel_bar=sel_bar[-length(sel_bar)],
-#                          #mean=mean(aux$Value),
-#                          param="f")
-# 
-# 
-#   aux <- out.ss3$derived_quants
-#   idx <- match(paste("Recr_",startyr:(endyr-1),sep=""), aux[,1])
-#   aux <- aux[idx, ]
-# 
-#   rec.dat <- data.frame(Year=startyr:(endyr-1),
-#                         Value=aux$Value/1000000,
-#                         CV=aux$StdDev/aux$Value,
-#                         Lower=(aux$Value-2*aux$StdDev)/1000000,
-#                         Upper=(aux$Value+2*aux$StdDev)/1000000,
-#                         #sel_bar=sel_bar[-length(sel_bar)],
-#                         #mean=mean(aux$Value),
-#                         param="rec")
-# 
-#   #In our case we use Biomass1+ and not SSB.
-#   #So we need to get values from the timeseries data.frame
-#   #And use the StDev from the SSB since the model does not calculate the StDev from the Biomass1+
-#   #aux <- out.ss3$derived_quants
-#   #idx <- match(paste("SSB_",startyr:endyr,sep=""), aux[,1])
-#   #aux <- aux[idx, ]
-#   aux <- subset(out.ss3$timeseries, Era=="TIME",c("Yr","Bio_smry"))
-#   idx <- grep("SSB_\\d",out.ss3$derived_quants$Label)
-#   cv <- data.frame(cv=out.ss3$derived_quants[idx,"StdDev"]/out.ss3$derived_quants[idx,"Value"])
-#   cv$Yr <- out.ss3$startyr:out.ss3$endyr
-#   aux <- merge(aux,cv,by="Yr")
-# 
-#   bio.dat <- data.frame(Year=startyr:endyr,
-#                         #Value=aux$Value,
-#                         Value=aux$Bio_smry/1000,
-#                         CV=aux$cv,
-#                         Lower=(aux$Bio_smry-2*aux$cv*aux$Bio_smry)/1000,
-#                         Upper=(aux$Bio_smry+2*aux$cv*aux$Bio_smry)/1000,
-#                         #sel_bar=sel_bar,
-#                         #mean=mean(aux$Bio_smry),
-#                         param="ssb"
-#   )
-# 
-#   landings <- dados$catch[dados$catch$year %in% c(startyr:(endyr-1)),4]/1000
-# 
-#   catch.dat <- data.frame(Year=startyr:(endyr-1),
-#                           Value=landings,
-#                           CV=rep(1,length(landings)),
-#                           Lower=landings,
-#                           Upper=landings,
-#                           #sel_bar=sel_bar[-length(sel_bar)],
-#                           #mean=mean(landings),
-#                           param="catch"
-# )
-# 
-#   all<-rbind(rec.dat,bio.dat,Fbar.dat,catch.dat)
-#   all <- all[,-c(3)]
-#  names(all) <- c("year","q50","q05","q95","indicator")
-#  all <- subset(all,year %in% c(1978:2019))
-# 
-# save(all,file="ASSss3_2020Data.RData")
-# rm(aux,bio.dat,cv,Fbar.dat,rec.dat,catch.dat,sel,selectivity,endyr,idx,mydir,out.ss3,sel_bar,startyr,dir2018,dados)
 
 #get data from historical assessment
 load("D:/IPMA/SARDINE/ADVICE_MP/FLBEIA_mseIBpil/2020/cluster_azti/data2020/ASSss3_2020Data.RData")
@@ -290,7 +197,7 @@ for (rr in c("REClow","REClowmed","RECmix")){
     facet_grid(indicator2~Rule,scales="free",labeller = as_labeller(facet_names))+
     geom_vline(xintercept = 2020, linetype = "dotted",color="#00A08A")+
     ylab("") +
-    scale_x_continuous(name="Year",breaks = seq(1978,2070,5))+
+    scale_x_continuous(name="Year",breaks = seq(1978,2070,10))+
     scale_y_continuous(breaks=scales::pretty_breaks(n = 6))
   
   
@@ -315,7 +222,7 @@ for (rr in c("REClow","REClowmed","RECmix")){
     facet_grid(indicator2~Rule,scales="free",labeller = as_labeller(facet_names))+
     geom_vline(xintercept = 2020, linetype = "dotted",color="#00A08A")+
     ylab("") +
-    scale_x_continuous(name="Year",breaks = seq(1978,2070,5))+
+    scale_x_continuous(name="Year",breaks = seq(1978,2070,10))+
     scale_y_continuous(breaks=scales::pretty_breaks(n = 6))
   
   
@@ -339,7 +246,7 @@ for (rr in c("REClow","REClowmed","RECmix")){
     facet_grid(indicator2~Rule,scales="free",labeller = as_labeller(facet_names))+
     geom_vline(xintercept = 2020, linetype = "dotted",color="#00A08A")+
     ylab("") +
-    scale_x_continuous(name="Year",breaks = seq(1978,2070,5))+
+    scale_x_continuous(name="Year",breaks = seq(1978,2070,10))+
     scale_y_continuous(breaks=scales::pretty_breaks(n = 6))
   
   
@@ -363,7 +270,7 @@ for (rr in c("REClow","REClowmed","RECmix")){
     facet_grid(indicator2~Rule,scales="free",labeller = as_labeller(facet_names))+
     geom_vline(xintercept = 2020, linetype = "dotted",color="#00A08A")+
     ylab("") +
-    scale_x_continuous(name="Year",breaks = seq(1978,2070,5))+
+    scale_x_continuous(name="Year",breaks = seq(1978,2070,10))+
     scale_y_continuous(breaks=scales::pretty_breaks(n = 6))
   
   
@@ -387,7 +294,7 @@ for (rr in c("REClow","REClowmed","RECmix")){
     facet_grid(indicator2~Rule,scales="free",labeller = as_labeller(facet_names))+
     geom_vline(xintercept = 2020, linetype = "dotted",color="#00A08A")+
     ylab("") +
-    scale_x_continuous(name="Year",breaks = seq(1978,2070,5))+
+    scale_x_continuous(name="Year",breaks = seq(1978,2070,10))+
     scale_y_continuous(breaks=scales::pretty_breaks(n = 6))
   
   
@@ -411,7 +318,7 @@ for (rr in c("REClow","REClowmed","RECmix")){
     facet_grid(indicator2~Rule,scales="free",labeller = as_labeller(facet_names))+
     geom_vline(xintercept = 2020, linetype = "dotted",color="#00A08A")+
     ylab("") +
-    scale_x_continuous(name="Year",breaks = seq(1978,2070,5))+
+    scale_x_continuous(name="Year",breaks = seq(1978,2070,10))+
     scale_y_continuous(breaks=scales::pretty_breaks(n = 6))
   
   
@@ -435,7 +342,7 @@ for (rr in c("REClow","REClowmed","RECmix")){
     facet_grid(indicator2~Rule,scales="free",labeller = as_labeller(facet_names))+
     geom_vline(xintercept = 2020, linetype = "dotted",color="#00A08A")+
     ylab("") +
-    scale_x_continuous(name="Year",breaks = seq(1978,2070,5))+
+    scale_x_continuous(name="Year",breaks = seq(1978,2070,10))+
     scale_y_continuous(breaks=scales::pretty_breaks(n = 6))
   
   
@@ -459,7 +366,7 @@ for (rr in c("REClow","REClowmed","RECmix")){
     facet_grid(indicator2~Rule,scales="free",labeller = as_labeller(facet_names))+
     geom_vline(xintercept = 2020, linetype = "dotted",color="#00A08A")+
     ylab("") +
-    scale_x_continuous(name="Year",breaks = seq(1978,2070,5))+
+    scale_x_continuous(name="Year",breaks = seq(1978,2070,10))+
     scale_y_continuous(breaks=scales::pretty_breaks(n = 6))
   
   
@@ -509,6 +416,7 @@ p + geom_hline(aes(yintercept = 337.448),linetype="dashed",color="#00A08A") +
 
 ggsave(paste0(plot.dir,'/boxplot_',rule,".png"),width = 3.92,height=6.65)
 
+
 }
 
 #==============================================================================
@@ -536,27 +444,21 @@ df <- successyr%>%
 
 df$Rec2 <- factor(df$Rec, levels=c("REClow","REClowmed","RECmix"))
 
-for (rule in c('HCR7','HCR8','HCR9','HCR10','HCR11','HCR0', 'HCR13','HCR14')){
+for (rule in c('HCR7','HCR8','HCR9','HCR10','HCR13','HCR14', 'HCR0','HCR11')){
 
 ss <- subset(df, Rule == rule & Ass=='ASSss3')
+ss <- ss%>% pivot_longer(col=2:4,names_to='prob')
 
-ggplot(data=ss)+
-  geom_line(data=subset(ss, Rec!="REClow"),aes(x=year,y=pblim))+
-  facet_grid(.~Rec2,labeller = as_labeller(facet_names))+
+
+ggplot(ss,aes(x=year,y=value,colour=prob) )+
+  geom_line()+
   geom_hline(yintercept = 0.95, linetype = "longdash")+
+  facet_grid(.~Rec)+
   ylim(c(0,1))+
-  geom_line(data=subset(ss, Rec=="REClow"),aes(x=year,y=pblow))+
-  ylab("P(B1+>=Blim)")+xlab("Year")+
-  scale_x_continuous(name="Year",breaks = seq(1978,2070,5))
-ggsave(paste0(plot.dir,'/pblim_',rule,".png"))
+  ylab("Probability")+xlab("Year")+
+  scale_x_continuous(name="Year",breaks = seq(2020,2070,5))
+ggsave(paste0(plot.dir,'/probs_',rule,".png"))
 
-ggplot(data=ss)+
-  geom_line(aes(x=year,y=pzero))+
-  facet_grid(.~Rec2,labeller = as_labeller(facet_names))+
-  ylim(c(0,1))+
-  ylab("P(TAC = 0)")+xlab("Year")+
-  scale_x_continuous(name="Year",breaks = seq(1978,2070,5))
-ggsave(paste0(plot.dir,'/pzero_',rule,".png"))
 
 }
 

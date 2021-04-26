@@ -29,7 +29,7 @@ res.plots  <- file.path("./output_refpts/plots")
 # LOAD LIBRARIES AND FUNCTIONS                                             ----
 #==============================================================================
 library(tidyverse)
-library(cowplot)
+#library(cowplot)
 
 df <- read.table(file.path(res.dir,"stats.csv"), header=T, sep=";")
 
@@ -45,18 +45,6 @@ for (rr in c("REClow","RECmed")){
   
   df1 <- subset(df, period=='last' &  Rule == 'HCR12' & Ass=='ASSnone' & Rec == rr)
   
-###SSB plot
-  
-ggplot(df1, aes(x=Fscan)) +
-  theme_bw() + 
-  geom_linerange(aes(ymin = P5th_B1plus, ymax = P95th_B1plus)) + 
-  geom_line(aes(y = Median_B1plus)) + 
-  geom_hline(yintercept = Bref, col = "red", linetype="dashed") +
-  annotate("text", x = 0, y = Bref, label = "Blim", col = "red",hjust = 0.8, vjust = 0) +
-  labs(y = "Biomass 1+",x = "Ftarget")
-ggsave(paste0(res.plots,'/',rr,"_ASSnone_SSBDistribution.png"),height = 4)
-
-
 if(rr=="RECmed") {  max_B1plus <- df1$max_P_B1plus_Blim } else { max_B1plus <- df1$max_P_B1plus_Blow}
 
 ###Flim Plot
@@ -72,15 +60,30 @@ it <- approx(df1$Fscan[i-0:1],max_B1plus[i-0:1])
 #check Fscan that corresponds to risk3 closer to 0.05
 Fbpa <- round(it$x[which.max(it$y >= 0.050)],2)
 #Now check what Median B1 plus corresponds to Fpa
-Bpa <- round(df1$Median_B1plus[df1$Fscan==Fpa],0)
+Bpa <- round(df1$Median_B1plus[df1$Fscan==Fbpa],0)
 
+###SSB plot
+
+ggplot(df1, aes(x=Fscan)) +
+  theme_bw() + 
+  geom_linerange(aes(ymin = P5th_B1plus, ymax = P95th_B1plus)) + 
+  geom_line(aes(y = Median_B1plus)) + 
+  geom_hline(yintercept = Bref, col = "red", linetype="dashed") +
+  #annotate("text", x = 0, y = Bref, label = "Blim", col = "red",hjust = 0.8, vjust = 0) +
+  #annotate("segment", x = 0, xend = Fbpa, y = Bpa, yend = Bpa, colour = "red", linetype = "dashed") +
+  #annotate("segment", x = Fbpa, xend = Fbpa, y = 0, yend = Bpa, colour = "red", linetype = "dashed") +
+  #annotate("text", x=Fbpa, y=Bpa,label=paste("possible Bpa = ", round(Bpa,0)),vjust=-0.2,hjust=-0.2,colour='red') +
+  labs(y = "Biomass 1+",x = "Ftarget")
+ggsave(paste0(res.plots,'/',rr,"_ASSnone_SSBDistribution.png"),height = 4)
+
+# Risk 3 plot
 ggplot(df1, aes(x=Fscan, y=max_B1plus)) +
   theme_bw() +
   geom_point(alpha=1/10) +
   geom_line(aes(y=pred),col='black') +
-  annotate("segment", x = 0, xend = Fbpa, y = 0.05, yend = 0.05, colour = "grey40", linetype = "dashed") +
-  annotate("segment", x = Fbpa, xend = Fbpa, y = 0, yend = 0.05, colour = "grey40", linetype = "dashed") +
-  annotate("text", x=Fbpa, y=0.05,label=paste("Fbpa = ", round(Fbpa,2)),vjust=-0.2,hjust=-0.2) +
+  #annotate("segment", x = 0, xend = Fbpa, y = 0.05, yend = 0.05, colour = "grey40", linetype = "dashed") +
+  #annotate("segment", x = Fbpa, xend = Fbpa, y = 0, yend = 0.05, colour = "grey40", linetype = "dashed") +
+  #annotate("text", x=Fbpa, y=0.05,label=paste("Fbpa = ", round(Fbpa,2)),vjust=-0.2,hjust=-0.2) +
   annotate("segment", x = 0, xend = Flim, y = 0.5, yend = 0.5, colour = "grey40", linetype = "dashed") +
   annotate("segment", x = Flim, xend = Flim, y = 0, yend = 0.5, colour = "grey40", linetype = "dashed") +
   annotate("text", x=Flim, y=0.5,label=paste("Flim = ", round(Flim,2)),vjust=-0.2,hjust=-0.2) +
@@ -92,12 +95,12 @@ ggsave(paste0(res.plots,'/',rr,"_ASSnone_Flim.png"),height = 4)
 if(rr=="RECmed") {  avg_B1plus <- df1$avg_P_B1plus_Blim } else { avg_B1plus <- df1$avg_P_B1plus_Blow}
 
 ###Probability plot (mean probability)
-ggplot(df1, aes(x=Fscan)) +
-  theme_bw() + 
-  geom_line(aes(y = avg_B1plus)) + 
-  geom_hline(yintercept = 0.05, col = "red", lwd = 1) +
-  labs(y = "Probability",x = "Ftarget")
-ggsave(paste0(res.plots,'/',rr,"_ASSnone_Probplot.png"),height = 4)
+# ggplot(df1, aes(x=Fscan)) +
+#   theme_bw() + 
+#   geom_line(aes(y = avg_B1plus)) + 
+#   geom_hline(yintercept = 0.05, col = "red", lwd = 1) +
+#   labs(y = "Probability",x = "Ftarget")
+# ggsave(paste0(res.plots,'/',rr,"_ASSnone_Probplot.png"),height = 4)
 
 
 out <- data.frame(Rec = rr, Flim=round(Flim,2), Fbpa = Fbpa, Bpa = Bpa)
@@ -109,7 +112,7 @@ out.Flim <- rbind(out.Flim,out)
 write.table( out.Flim, file=file.path(res.dir,"Flim.csv"), dec = ".", sep = ";",
              row.names = FALSE)
 
-rm(out, out.Flim, Bpa, it, i, Fbpa, Flim, g, coefs, df1, rr)
+rm(out, out.Flim, Bpa, it, i, Fbpa, Flim, g, coefs, df1, rr, avg_B1plus,max_B1plus, Bref)
 
 
 #############################################
@@ -122,7 +125,7 @@ for (rr in c("REClow","RECmed")){
   
   if(rr=="RECmed") {  Bref <- 337448 } else { Bref <- 196334}
 
-  df2 <- subset(df, period=='last' &  Rule != c('HCR0','HCR11') & Ass=='ASSss3' & Rec == rr)
+  df2 <- subset(df, period=='last' &  Rule == 'HCR12' & Ass=='ASSss3' & Rec == rr)
 
 
 ###SSB plot
@@ -134,7 +137,7 @@ ggplot(df2, aes(x=Fscan)) +
   geom_hline(yintercept = Bref, col = "red", linetype="dashed") +
   annotate("text", x = 0, y = Bref, label = "Blim", col = "red",hjust = 0.8, vjust = 0) +
   labs(y = "Biomass 1+",x = "Ftarget")
-ggsave(paste0(res.plots,'/',rr,"_ASSss3_SSBDistribution.png"))
+ggsave(paste0(res.plots,'/',rr,"_ASSss3_constantF_SSBDistribution.png"))
 
 ###Probability plot (max probability)
 if(rr=="RECmed") {  max_B1plus <- df2$max_P_B1plus_Blim } else { max_B1plus <- df2$max_P_B1plus_Blow}
@@ -144,7 +147,7 @@ ggplot(df2, aes(x=Fscan)) +
   geom_line(aes(y = max_B1plus)) + 
   geom_hline(yintercept = 0.05, col = "red", lwd = 1) +
   labs(y = "Risk 3",x = "Ftarget")
-ggsave(paste0(res.plots,'/',rr,"_ASSss3_Probplot.png"))
+ggsave(paste0(res.plots,'/',rr,"_ASSss3_constantF_Probplot.png"))
 
 ###FMSY plot(s)
 
@@ -212,7 +215,7 @@ ggplot(df2, aes(x=Fscan)) +
   geom_hline(yintercept = Bref, col = "red", linetype="dashed") +
   annotate("text", x = 0, y = Bref, label = "Blim", col = "red",hjust = 0, vjust = 0) +
   labs(y = "Biomass 1+",x = "Ftarget")
-  ggsave(paste0(res.plots,'/',rr,"_ASSs3_SSBDistribution_FmsyIntervals.png"))
+  ggsave(paste0(res.plots,'/',rr,"_ASSs3_constantF_SSBDistribution_FmsyIntervals.png"))
   
   out <- data.frame(Rec = rr, Fmsy=FMSY, FmsyUpper = fmsy.upper, FmsyLower = fmsy.lower)
   
@@ -222,6 +225,9 @@ ggplot(df2, aes(x=Fscan)) +
 
 write.table( out.Fmsy, file=file.path(res.dir,"Fmsy.csv"), dec = ".", sep = ";",
              row.names = FALSE)
+
+rm(out, out.Fmsy, fmsy.lower,fmsy.lower.mean, fmsy.upper,fmsy.upper.mean,max_B1plus,FMSY,interval,
+   landings.lower.mean,landings.upper.mean,rr,yield.p95,Bref, df2,lm.pred,lm.pred.95,x.lm)
 
 ###################################################
 ###     Check if FMSY is precautionary          ###
@@ -234,23 +240,25 @@ for (rr in c("REClow","RECmed")){
   if(rr=="RECmed") { 
     
     Bref <- 337448 
-    df3 <- subset(df, Rule == 'HCR0' & period=='last' & Ass == "ASSss3" & Rec == rr)
+    df3 <- subset(df, Rule == 'HCR16' & period=='last' & Ass == "ASSss3" & Rec == rr)
+    max_B1plus <- df3$max_P_B1plus_Blim
     
   }
   
   else {
     
     Bref <- 196334
-    df3 <- subset(df, Rule == 'HCR11' & period=='last' & Ass == "ASSss3" & Rec == rr)
+    df3 <- subset(df, Rule == 'HCR15' & period=='last' & Ass == "ASSss3" & Rec == rr)
+    max_B1plus <- df3$max_P_B1plus_Blow
     
   }
   
-  #extract Ftarget where P5th_B1plus == Bref
-  i <- which.min(df3$P5th_B1plus > Bref) # first position where P5th_B1plus is above Bref
+  #extract associated F for which risk3 == 0.05
+  i <- which.max(max_B1plus >= 0.05) # risk 3 = 0.05
   #make interpolation between that position and the previous one
-  it <- approx(df3$Fscan[i-0:1], df3$P5th_B1plus[i-0:1])
-  #check Fscan that corresponds to P5th_B1plus closer to Bref
-  Fp05 <- round(it$x[which.max(it$y <= Bref)],2)
+  it <- approx(df3$Fscan[i-0:1],max_B1plus[i-0:1])
+  #check Fscan that corresponds to risk3 closer to 0.05
+  Fp05 <- round(it$x[which.max(it$y >= 0.050)],3)
   
   
   ###SSB plot
@@ -260,21 +268,20 @@ for (rr in c("REClow","RECmed")){
     geom_linerange(aes(ymin = P5th_B1plus, ymax = P95th_B1plus)) + 
     geom_line(aes(y = Median_B1plus)) + 
     geom_hline(yintercept = Bref, col = "red", linetype = "dashed") +
-    geom_vline(xintercept = Fp05, col = "red", linetype = "dashed") +
     annotate("text", x = 0, y = Bref, label = "Blim", col = "red",hjust = 0.7, vjust = 0) +
     labs(y = "Biomass 1+",x = "Ftarget")
-  ggsave(paste0(res.dir,'/',rr,"_",unique(df3$Rule),"_ASSss3_SSB.png"))
+  ggsave(paste0(res.plots,'/',rr,"_",unique(df3$Rule),"_ASSss3_ICESRule_SSB.png"),height = 4)
 
-  ###Probability plot (mean probability)
-  
-  if(rr=="RECmed") {  avg_B1plus <- df3$avg_P_B1plus_Blim } else { avg_B1plus <- df3$avg_P_B1plus_Blow}
-  
+  ###Maximum Probability plot (mean probability)
+
   ggplot(df3, aes(x=Fscan)) +
     theme_bw() + 
-    geom_line(aes(y = avg_B1plus)) + 
-    geom_hline(yintercept = 0.05, col = "red", lwd = 1) +
+    geom_line(aes(y = max_B1plus))+ 
+    annotate("segment", x = 0, xend = Fp05, y = 0.05, yend = 0.05, colour = "grey40", linetype = "dashed") +
+    annotate("segment", x = Fp05, xend = Fp05, y = 0, yend = 0.05, colour = "grey40", linetype = "dashed") +
+    annotate("text", x=Fp05, y=0.05,label=paste("Fp05 = ",Fp05),vjust=-0.2,hjust=-0.2) +
     labs(y = "Probability",x = "Ftarget")
-  ggsave(paste0(res.dir,'/',rr,"_",unique(df3$Rule),"_ASSss3_probPlot.png"))
+  ggsave(paste0(res.plots,'/',rr,"_",unique(df3$Rule),"_ASSss3_ICESRule_probPlot.png"),height = 4)
   
   ### FMSY plot(s)
   
@@ -286,7 +293,7 @@ for (rr in c("REClow","RECmed")){
   interval = 0.95
   
   yield.p95 <- interval * max(df3$Median_Catch, na.rm = TRUE)
-  x.lm <- stats::loess(df3$Median_Catch ~ df3$Fscan, span = 0.2)
+  x.lm <- stats::loess(df3$Median_Catch ~ df3$Fscan, span = 0.6)#add to increase span
   lm.pred <- data.frame(x = seq(min(df3$Fscan), max(df3$Fscan), length = 1000), 
                         y = rep(NA, 1000))
   lm.pred$y <- stats::predict(x.lm, newdata = lm.pred$x)
@@ -322,11 +329,11 @@ for (rr in c("REClow","RECmed")){
     geom_vline(xintercept=fmsy.upper.mean,alpha=5/10,linetype="dashed") +
     annotate("text", fmsy.upper.mean, 0,  vjust = 0.8, hjust=0,label = "F[MSY]~Upper",parse=T,size=4,color="grey30")
   
-  p6 <- p5 + annotate(geom="text", x=1.5, y=40000, col="black",
+  p6 <- p5 + xlim(0,0.25) +annotate(geom="text", x=0.22, y=30000, col="black",
                       label=paste("Fmsy Lower:", round(fmsy.lower.mean,2),
                                   "\nFmsy:",round(lm.pred$x[lm.pred$y==max(lm.pred)],2), 
                                   "\nFmsy Upper:",round(fmsy.upper.mean,2)))
-  ggsave(paste0(res.dir,'/',rr,"_",unique(df3$Rule),"_ASSss3_Fmsy.png"))
+  ggsave(paste0(res.plots,'/',rr,"_",unique(df3$Rule),"_ASSss3_ICESRule_Fmsy.png"),height = 4)
   
 
 ###Extract Fp0.05 from runs with Btrigger (ICES Rule, Blim, Btrigger, FMSY)
@@ -343,7 +350,7 @@ p3 + geom_point(aes(x=Fp05,y=yield.f05),colour="blue") +
   geom_hline(yintercept=yield.f05,colour="blue") +
   geom_hline(yintercept=yield.f05.95,colour="blue",linetype="dashed") +
   geom_vline(xintercept=f05.lower,colour="blue",linetype="dashed") 
-ggsave(paste0(res.dir,'/',rr,"_",unique(df3$Rule),"_ASSss3_Fp05.png"))
+ggsave(paste0(res.plots,'/',rr,"_",unique(df3$Rule),"_ASSss3_ICESRule_Fp05lowerbound.png"),height = 4)
 
 out <- data.frame(Rec = rr, Fmsy = FMSY, FmsyUpper = fmsy.upper, FmsyLower = fmsy.lower,
                   Fp05 = Fp05, Fp05Lower = f05.lower)

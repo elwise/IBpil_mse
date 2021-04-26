@@ -326,7 +326,7 @@ pilHCRs <- function(stocks, advice, advice.ctrl, year, season, stknm,...){
       Ftg   <- ifelse(b.pos==0,0,ifelse(b.pos == 1,(0-Flow)*Bloss/(Bmsy-Bloss) + (Flow/(Bmsy-Bloss))*b.datyr,
                              ifelse(b.pos == 2,(Flow-(Fmsy-Flow)*Bmsy/(Bpa-Bmsy)) + ((Fmsy-Flow)/(Bpa-Bmsy))*b.datyr,Fmsy)))
       
-    }else if (rule==11){# HCR0: ICES HCR (F-based HCR in absolute terms) with ref points from low productivity regime
+    }else if (rule==11){# HCR11: ICES HCR (F-based HCR in absolute terms) with ref points from low productivity regime
       
       # ad-hoc modification of rule parameters 
       ref.pts['Fmsy',] <- 0.032

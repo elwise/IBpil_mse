@@ -106,6 +106,7 @@ ggplot(subset(df, indicator == 'Median_Catch' & Ass=="ASSss3"),aes(x=Rule,y=peri
   scale_x_discrete(labels=c('HCR0'="ICES_med", 'HCR10'="HCR50", 
                             'HCR11'="ICES_low", 'HCR7'="HCR0" ,'HCR8'= "HCR40", 'HCR9'="HCR45", 'HCR13'="HCR35",'HCR14'="HCR30"))
 ggsave(file.path(plot.dir,paste0("SummaryScenarios_Catch.png")),height = 4,width = 7)
+
 #summary plot for IAV
 ggplot(subset(df, indicator == 'IAV1_Catch' & Ass=="ASSss3"),aes(x=Rule,y=period))+
   geom_tile(aes(fill=cut(value/1000, breaks = c(-Inf,5,10,15,Inf))))+
@@ -123,7 +124,7 @@ ggsave(file.path(plot.dir,paste0("SummaryScenarios_IAV.png")),height = 4,width =
 ggplot(subset(df, indicator == 'max_P_B1plus_Blow' & Ass=="ASSss3"),aes(x=Rule,y=period))+
   geom_tile(aes(fill=cut(value*100, breaks = c(-Inf,3,4,5,Inf))))+
   facet_grid(.~Rec)+
-  geom_text(aes(label=round(value*100,1)),show.legend=F) +
+  geom_text(aes(label=round(value*100,1)),show.legend=F, size=2) +
   scale_fill_manual(values = c( "#1A9641","#A6D96A" ,"#FDAE61","#D7191C" ),name='Risk3', drop = F, guide = "coloursteps")+
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
   scale_x_discrete(labels=c('HCR0'="ICES_med", 'HCR10'="HCR50", 
@@ -134,7 +135,7 @@ ggsave(file.path(plot.dir,paste0("SummaryScenarios_Risk3Blow.png")),height = 4,w
 ggplot(subset(df, indicator == 'max_P_B1plus_Blim' & Ass=="ASSss3"),aes(x=Rule,y=period))+
   geom_tile(aes(fill=cut(value*100, breaks = c(-Inf,3,4,5,Inf))))+
   facet_grid(.~Rec)+
-  geom_text(aes(label=round(value*100,1)),show.legend=F) +
+  geom_text(aes(label=round(value*100,1)),show.legend=F, size=2) +
   scale_fill_manual(values = c( "#1A9641","#A6D96A" ,"#FDAE61","#D7191C" ),name='Risk3', drop = F, guide = "coloursteps")+
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
   scale_x_discrete(labels=c('HCR0'="ICES_med", 'HCR10'="HCR50", 
@@ -145,7 +146,7 @@ ggsave(file.path(plot.dir,paste0("SummaryScenarios_Risk3Blim.png")),height = 4,w
 ggplot(subset(df, indicator == 'avg_P_B1plus_Blow' & Ass=="ASSss3"),aes(x=Rule,y=period))+
   geom_tile(aes(fill=cut(value*100, breaks = c(-Inf,3,4,5,Inf))))+
   facet_grid(.~Rec)+
-  geom_text(aes(label=round(value*100,1)),show.legend=F) +
+  geom_text(aes(label=round(value*100,1)),show.legend=F, size=2) +
   scale_fill_manual(values = c( "#1A9641","#A6D96A" ,"#FDAE61","#D7191C" ),name='Risk1', drop = F, guide = "coloursteps")+
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
   scale_x_discrete(labels=c('HCR0'="ICES_med", 'HCR10'="HCR50", 
@@ -155,7 +156,7 @@ ggsave(file.path(plot.dir,paste0("SummaryScenarios_Risk1Blow.png")),height = 4,w
 ggplot(subset(df, indicator == 'avg_P_B1plus_Blim' & Ass=="ASSss3"),aes(x=Rule,y=period))+
   geom_tile(aes(fill=cut(value*100, breaks = c(-Inf,3,4,5,Inf))))+
   facet_grid(.~Rec)+
-  geom_text(aes(label=round(value*100,1)),show.legend=F) +
+  geom_text(aes(label=round(value*100,1)),show.legend=F, size=2) +
   scale_fill_manual(values = c( "#1A9641","#A6D96A" ,"#FDAE61","#D7191C" ),name='Risk1', drop = F, guide = "coloursteps")+
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
   scale_x_discrete(labels=c('HCR0'="ICES_med", 'HCR10'="HCR50", 

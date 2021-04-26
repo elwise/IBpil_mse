@@ -32,10 +32,7 @@ res.dir  <- file.path("./output/")
 #==============================================================================
 
 # load libraries
-library(ggplot2)
 library(dplyr)
-
-theme_set(theme_bw())
 
 #==============================================================================
 # Tables for the report
@@ -70,14 +67,24 @@ aux <- df %>% subset(Rule %in% c("HCR14","HCR13","HCR8","HCR9","HCR10") & Ass=="
             round(closure[period=="short"]*100,0),
             round(closure[period=="med"]*100,0),
             round(closure[period=="last"]*100,0),
-            #round(P_B1plus_0.8Blim[period=="initial"]*100,0),
-            #round(P_B1plus_0.8Blow[period=="initial"]*100,0),
-            #round(firstyear_B1plus_0.8Blim[period=="all"],0),
-            #round(firstyear_B1plus_0.8Blow[period=="all"],0),
             round(firstyear_B1plus_Blim[period=="all"],0),
             round(firstyear_B1plus_Blow[period=="all"],0),
-            round(max_P_B1plus_Blim[period=="last"]*100,0),
-            round(max_P_B1plus_Blow[period=="last"]*100,0)
+            round(avg_P_B1plus_Blim[period=="initial"]*100,1),
+            round(avg_P_B1plus_Blim[period=="short"]*100,1),
+            round(avg_P_B1plus_Blim[period=="med"]*100,1),
+            round(avg_P_B1plus_Blim[period=="last"]*100,1),
+            round(avg_P_B1plus_Blow[period=="initial"]*100,1),
+            round(avg_P_B1plus_Blow[period=="short"]*100,1),
+            round(avg_P_B1plus_Blow[period=="med"]*100,1),
+            round(avg_P_B1plus_Blow[period=="last"]*100,1),
+            round(max_P_B1plus_Blim[period=="initial"]*100,1),
+            round(max_P_B1plus_Blim[period=="short"]*100,1),
+            round(max_P_B1plus_Blim[period=="med"]*100,1),
+            round(max_P_B1plus_Blim[period=="last"]*100,1),
+            round(max_P_B1plus_Blow[period=="initial"]*100,1),
+            round(max_P_B1plus_Blow[period=="short"]*100,1),
+            round(max_P_B1plus_Blow[period=="med"]*100,1),
+            round(max_P_B1plus_Blow[period=="last"]*100,1)
   )
 write.table(t(aux), file=file.path(res.dir, "table_report_HCR8to14_ASSnone.csv"), sep=";", col.names=F)
 
@@ -164,13 +171,22 @@ aux <- df %>% subset(Rule %in% c("HCR14","HCR13","HCR8","HCR9","HCR10") & Ass=="
             round(firstyear_B1plus_Blim[period=="all"],0),
             round(firstyear_B1plus_Blow[period=="all"],0),
             round(avg_P_B1plus_Blim[period=="initial"]*100,1),
-            round(avg_P_B1plus_Blow[period=="initial"]*100,1),
             round(avg_P_B1plus_Blim[period=="short"]*100,1),
+            round(avg_P_B1plus_Blim[period=="med"]*100,1),
+            round(avg_P_B1plus_Blim[period=="last"]*100,1),
+            round(avg_P_B1plus_Blow[period=="initial"]*100,1),
             round(avg_P_B1plus_Blow[period=="short"]*100,1),
+            round(avg_P_B1plus_Blow[period=="med"]*100,1),
+            round(avg_P_B1plus_Blow[period=="last"]*100,1),
             round(max_P_B1plus_Blim[period=="initial"]*100,1),
-            round(max_P_B1plus_Blow[period=="short"]*100,1),
+            round(max_P_B1plus_Blim[period=="short"]*100,1),
             round(max_P_B1plus_Blim[period=="med"]*100,1),
+            round(max_P_B1plus_Blim[period=="last"]*100,1),
+            round(max_P_B1plus_Blow[period=="initial"]*100,1),
+            round(max_P_B1plus_Blow[period=="short"]*100,1),
+            round(max_P_B1plus_Blow[period=="med"]*100,1),
             round(max_P_B1plus_Blow[period=="last"]*100,1)
+            
   )
 write.table(t(aux), file=file.path(res.dir, "table_report_HCR8to14_ASSss3.csv"), sep=";", col.names=F)
 
