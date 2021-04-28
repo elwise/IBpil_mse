@@ -162,6 +162,20 @@ out.perf <- out %>%
          rmse=sqrt( mean((value-med)^2) ),
          cv=sqrt(var(value))/mean(value))
 
+# save the table of results
+# out.perf2 <- out %>% 
+#   group_by(Rec,Ass,Rule, size, risk) %>% 
+#   summarise(med.size=median(value),
+#             med.all=median(med),
+#             me=mean(value-med),
+#             rmse=sqrt( mean((value-med)^2) ),
+#             cv=sqrt(var(value))/mean(value)) %>%
+#   ungroup() %>% 
+#   mutate(Rule.label=recode(Rule, HCR0="ICES_med", HCR10="HCR50", 
+#          HCR11="ICES_low", HCR7="HCR0" , HCR8= "HCR40", HCR9="HCR45", HCR13="HCR35",HCR14="HCR30"))
+# write.table( out.perf2, file=file.path(wd, "output_long","table_perfstats.csv"), dec = ".", sep = ";",
+#              row.names = FALSE)
+
 #By REC
 
 for (rr in c("REClow","REClowmed")){
