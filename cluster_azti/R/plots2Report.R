@@ -324,7 +324,7 @@ for (rr in c("REClow","REClowmed","RECmix")){
   
   p + geom_hline(aes(yintercept = 337.448), data = subset(gg, indicator=="ssb"),linetype="dashed",color="#00A08A") +
     geom_hline(aes(yintercept = 196.334), data = subset(gg,indicator=="ssb"),linetype="dashed",color="#00A08A")
-  ggsave(paste0(plot.dir,'/',rr,"_HCR10.png"),width = 3.92,height=6.65)
+  ggsave(paste0(plot.dir,'/',rr,"_HCR13.png"),width = 3.92,height=6.65)
 }
 
 ###For HCR0 
@@ -462,4 +462,22 @@ ggsave(paste0(plot.dir,'/probs_',rule,".png"))
 
 }
 
+####################################################
+#RISK 3 
 
+tt <- read.table(file.path(res.dir,"stats.csv"), header=T, sep=";")
+
+tt$Rec <- ordered(tt$Rec, c("REClow","REClowmed","RECmix"))
+
+head(tt)
+
+tlow <- subset(tt, period=='last' & Rec =='REClow' & Ass == 'ASSss3')
+
+ggplot(tlow, aes(x=Rule))+
+  geom_point(aes(y=max_P_B1plus_Blow))+
+  geom_point(aes(y=avg_P_B1plus_Blow),colour='red')+
+  geom_hline(yintercept = c(0.04,0.06))+
+  geom_hline(yintercept = 0.05,linetype='dashed')
+  
+  
+  

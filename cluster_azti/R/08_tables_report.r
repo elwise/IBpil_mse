@@ -33,6 +33,8 @@ res.dir  <- file.path("./output/")
 
 # load libraries
 library(dplyr)
+library(tidyr)
+library(gt)
 
 #==============================================================================
 # Tables for the report
@@ -42,208 +44,38 @@ df <- read.table(file.path(res.dir,"stats.csv"), header=T, sep=";")
 
 df$Rec <- ordered(df$Rec, c("REClow","REClowmed","RECmix"))
 
+df$period <- ordered(df$period, c("initial", "short", "med","last","all"))
 
-# tables for the report NO ASSESSMENT
-
-aux <- df %>% subset(Rule %in% c("HCR14","HCR13","HCR8","HCR9","HCR10") & Ass=="ASSnone") %>%
-  group_by(Rec, Rule) %>%
-  summarise(round(Median_B1plus[period=="initial"]/1000,0),
-            round(Median_B1plus[period=="short"]/1000,0),
-            round(Median_B1plus[period=="med"]/1000,0),
-            round(Median_B1plus[period=="last"]/1000,0),
-            round(Median_F[period=="initial"],3),
-            round(Median_F[period=="short"],3),
-            round(Median_F[period=="med"],3),
-            round(Median_F[period=="last"],3),
-            round(Median_Catch[period=="initial"]/1000,0),
-            round(Median_Catch[period=="short"]/1000,0),
-            round(Median_Catch[period=="med"]/1000,0),
-            round(Median_Catch[period=="last"]/1000,0),
-            round(IAV1_Catch[period=="initial"]/1000,0),
-            round(IAV1_Catch[period=="short"]/1000,0),
-            round(IAV1_Catch[period=="med"]/1000,0),
-            round(IAV1_Catch[period=="last"]/1000,0),
-            round(closure[period=="initial"]*100,0),
-            round(closure[period=="short"]*100,0),
-            round(closure[period=="med"]*100,0),
-            round(closure[period=="last"]*100,0),
-            round(firstyear_B1plus_Blim[period=="all"],0),
-            round(firstyear_B1plus_Blow[period=="all"],0),
-            round(avg_P_B1plus_Blim[period=="initial"]*100,1),
-            round(avg_P_B1plus_Blim[period=="short"]*100,1),
-            round(avg_P_B1plus_Blim[period=="med"]*100,1),
-            round(avg_P_B1plus_Blim[period=="last"]*100,1),
-            round(avg_P_B1plus_Blow[period=="initial"]*100,1),
-            round(avg_P_B1plus_Blow[period=="short"]*100,1),
-            round(avg_P_B1plus_Blow[period=="med"]*100,1),
-            round(avg_P_B1plus_Blow[period=="last"]*100,1),
-            round(max_P_B1plus_Blim[period=="initial"]*100,1),
-            round(max_P_B1plus_Blim[period=="short"]*100,1),
-            round(max_P_B1plus_Blim[period=="med"]*100,1),
-            round(max_P_B1plus_Blim[period=="last"]*100,1),
-            round(max_P_B1plus_Blow[period=="initial"]*100,1),
-            round(max_P_B1plus_Blow[period=="short"]*100,1),
-            round(max_P_B1plus_Blow[period=="med"]*100,1),
-            round(max_P_B1plus_Blow[period=="last"]*100,1)
-  )
-write.table(t(aux), file=file.path(res.dir, "table_report_HCR8to14_ASSnone.csv"), sep=";", col.names=F)
-
-aux <- df %>% subset(Rule %in% c("HCR7") & Ass=="ASSnone") %>%
-  group_by(Rec, Rule) %>%
-  summarise(round(Median_B1plus[period=="initial"]/1000,0),
-            round(Median_B1plus[period=="short"]/1000,0),
-            round(Median_B1plus[period=="last"]/1000,0),
-            round(Median_F[period=="initial"],3),
-            round(Median_F[period=="short"],3),
-            round(Median_F[period=="last"],3),
-            round(Median_Catch[period=="initial"]/1000,0),
-            round(Median_Catch[period=="short"]/1000,0),
-            round(Median_Catch[period=="last"]/1000,0),
-            round(IAV1_Catch[period=="initial"]/1000,0),
-            round(IAV1_Catch[period=="short"]/1000,0),
-            round(IAV1_Catch[period=="last"]/1000,0),
-            round(closure[period=="initial"]*100,0),
-            round(closure[period=="short"]*100,0),
-            round(closure[period=="last"]*100,0),
-            #round(P_B1plus_0.8Blim[period=="initial"]*100,0),
-            #round(P_B1plus_0.8Blow[period=="initial"]*100,0),
-            #round(firstyear_B1plus_0.8Blim[period=="all"],0),
-            #round(firstyear_B1plus_0.8Blow[period=="all"],0),
-            round(firstyear_B1plus_Blim[period=="all"],0),
-            round(firstyear_B1plus_Blow[period=="all"],0),
-            round(max_P_B1plus_Blim[period=="last"]*100,0),
-            round(max_P_B1plus_Blow[period=="last"]*100,0)
-  )
-write.table(t(aux), file=file.path(res.dir, "table_report_HCR7_ASSnone.csv"), sep=";", col.names=F)
-
-aux <- df %>% subset(Rule %in% c("HCR0","HCR11") & Ass=="ASSnone") %>%
-  group_by(Rec, Rule) %>%
-  summarise(round(Median_B1plus[period=="initial"]/1000,0),
-            round(Median_B1plus[period=="short"]/1000,0),
-            round(Median_B1plus[period=="last"]/1000,0),
-            round(Median_F[period=="initial"],3),
-            round(Median_F[period=="short"],3),
-            round(Median_F[period=="last"],3),
-            round(Median_Catch[period=="initial"]/1000,0),
-            round(Median_Catch[period=="short"]/1000,0),
-            round(Median_Catch[period=="last"]/1000,0),
-            round(IAV1_Catch[period=="initial"]/1000,0),
-            round(IAV1_Catch[period=="short"]/1000,0),
-            round(IAV1_Catch[period=="last"]/1000,0),
-            round(closure[period=="initial"]*100,0),
-            round(closure[period=="short"]*100,0),
-            round(closure[period=="last"]*100,0),
-            #round(P_B1plus_0.8Blim[period=="initial"]*100,0),
-            #round(P_B1plus_0.8Blow[period=="initial"]*100,0),
-            #round(firstyear_B1plus_0.8Blim[period=="all"],0),
-            #round(firstyear_B1plus_0.8Blow[period=="all"],0),
-            round(firstyear_B1plus_Blim[period=="all"],0),
-            round(firstyear_B1plus_Blow[period=="all"],0),
-            round(max_P_B1plus_Blim[period=="last"]*100,0),
-            round(max_P_B1plus_Blow[period=="last"]*100,0)
-  )
-write.table(t(aux), file=file.path(res.dir, "table_report_HCR0&HCR11_ASSnone.csv"), sep=";", col.names=F)
-
-# tables for the report WITH ASSESSMENT
-
-aux <- df %>% subset(Rule %in% c("HCR14","HCR13","HCR8","HCR9","HCR10") & Ass=="ASSss3") %>%
-  group_by(Rec, Rule) %>%
-  summarise(round(Median_B1plus[period=="initial"]/1000,0),
-            round(Median_B1plus[period=="short"]/1000,0),
-            round(Median_B1plus[period=="med"]/1000,0),
-            round(Median_B1plus[period=="last"]/1000,0),
-            round(Median_F[period=="initial"],3),
-            round(Median_F[period=="short"],3),
-            round(Median_F[period=="med"],3),
-            round(Median_F[period=="last"],3),
-            round(Median_Catch[period=="initial"]/1000,0),
-            round(Median_Catch[period=="short"]/1000,0),
-            round(Median_Catch[period=="med"]/1000,0),
-            round(Median_Catch[period=="last"]/1000,0),
-            round(IAV1_Catch[period=="initial"]/1000,0),
-            round(IAV1_Catch[period=="short"]/1000,0),
-            round(IAV1_Catch[period=="med"]/1000,0),
-            round(IAV1_Catch[period=="last"]/1000,0),
-            round(closure[period=="initial"]*100,0),
-            round(closure[period=="short"]*100,0),
-            round(closure[period=="med"]*100,0),
-            round(closure[period=="last"]*100,0),
-            round(firstyear_B1plus_Blim[period=="all"],0),
-            round(firstyear_B1plus_Blow[period=="all"],0),
-            round(avg_P_B1plus_Blim[period=="initial"]*100,1),
-            round(avg_P_B1plus_Blim[period=="short"]*100,1),
-            round(avg_P_B1plus_Blim[period=="med"]*100,1),
-            round(avg_P_B1plus_Blim[period=="last"]*100,1),
-            round(avg_P_B1plus_Blow[period=="initial"]*100,1),
-            round(avg_P_B1plus_Blow[period=="short"]*100,1),
-            round(avg_P_B1plus_Blow[period=="med"]*100,1),
-            round(avg_P_B1plus_Blow[period=="last"]*100,1),
-            round(max_P_B1plus_Blim[period=="initial"]*100,1),
-            round(max_P_B1plus_Blim[period=="short"]*100,1),
-            round(max_P_B1plus_Blim[period=="med"]*100,1),
-            round(max_P_B1plus_Blim[period=="last"]*100,1),
-            round(max_P_B1plus_Blow[period=="initial"]*100,1),
-            round(max_P_B1plus_Blow[period=="short"]*100,1),
-            round(max_P_B1plus_Blow[period=="med"]*100,1),
-            round(max_P_B1plus_Blow[period=="last"]*100,1)
-            
-  )
-write.table(t(aux), file=file.path(res.dir, "table_report_HCR8to14_ASSss3.csv"), sep=";", col.names=F)
-
-
-aux <- df %>% subset(Rule %in% c("HCR7") & Ass=="ASSss3") %>%
-  group_by(Rec, Rule) %>%
-  summarise(round(Median_B1plus[period=="initial"]/1000,0),
-            round(Median_B1plus[period=="short"]/1000,0),
-            round(Median_B1plus[period=="last"]/1000,0),
-            round(Median_F[period=="initial"],3),
-            round(Median_F[period=="short"],3),
-            round(Median_F[period=="last"],3),
-            round(Median_Catch[period=="initial"]/1000,0),
-            round(Median_Catch[period=="short"]/1000,0),
-            round(Median_Catch[period=="last"]/1000,0),
-            round(IAV1_Catch[period=="initial"]/1000,0),
-            round(IAV1_Catch[period=="short"]/1000,0),
-            round(IAV1_Catch[period=="last"]/1000,0),
-            round(closure[period=="initial"]*100,0),
-            round(closure[period=="short"]*100,0),
-            round(closure[period=="last"]*100,0),
-            #round(P_B1plus_0.8Blim[period=="initial"]*100,0),
-            #round(P_B1plus_0.8Blow[period=="initial"]*100,0),
-            #round(firstyear_B1plus_0.8Blim[period=="all"],0),
-            #round(firstyear_B1plus_0.8Blow[period=="all"],0),
-            round(firstyear_B1plus_Blim[period=="all"],0),
-            round(firstyear_B1plus_Blow[period=="all"],0),
-            round(max_P_B1plus_Blim[period=="last"]*100,0),
-            round(max_P_B1plus_Blow[period=="last"]*100,0)
-  )
-write.table(t(aux), file=file.path(res.dir, "table_report_HCR7_ASSss3.csv"), sep=";", col.names=F)
-
-aux <- df %>% subset(Rule %in% c("HCR0","HCR11") & Ass=="ASSss3") %>%
-  group_by(Rec, Rule) %>%
-  summarise(round(Median_B1plus[period=="initial"]/1000,0),
-            round(Median_B1plus[period=="short"]/1000,0),
-            round(Median_B1plus[period=="last"]/1000,0),
-            round(Median_F[period=="initial"],3),
-            round(Median_F[period=="short"],3),
-            round(Median_F[period=="last"],3),
-            round(Median_Catch[period=="initial"]/1000,0),
-            round(Median_Catch[period=="short"]/1000,0),
-            round(Median_Catch[period=="last"]/1000,0),
-            round(IAV1_Catch[period=="initial"]/1000,0),
-            round(IAV1_Catch[period=="short"]/1000,0),
-            round(IAV1_Catch[period=="last"]/1000,0),
-            round(closure[period=="initial"]*100,0),
-            round(closure[period=="short"]*100,0),
-            round(closure[period=="last"]*100,0),
-            #round(P_B1plus_0.8Blim[period=="initial"]*100,0),
-            #round(P_B1plus_0.8Blow[period=="initial"]*100,0),
-            #round(firstyear_B1plus_0.8Blim[period=="all"],0),
-            #round(firstyear_B1plus_0.8Blow[period=="all"],0),
-            round(firstyear_B1plus_Blim[period=="all"],0),
-            round(firstyear_B1plus_Blow[period=="all"],0),
-            round(max_P_B1plus_Blim[period=="last"]*100,0),
-            round(max_P_B1plus_Blow[period=="last"]*100,0)
-  )
-write.table(t(aux), file=file.path(res.dir, "table_report_HCR0&HCR11_ASSss3.csv"), sep=";", col.names=F)
-
+aux <-  
+  df %>% 
+  select(Rule = Rule,Period = period,Ass,Rec, B1plus = Median_B1plus, F = Median_F,Catch = Median_Catch,IAV= IAV1_Catch,
+         Closure = closure,"First year Blim"= firstyear_B1plus_Blim, "First year Blow" = firstyear_B1plus_Blow,
+         "Risk 1 Blim" = avg_P_B1plus_Blim, "Risk 1 Blow" = avg_P_B1plus_Blow,
+         "Risk 3 Blim" = max_P_B1plus_Blim,
+         "Risk 3 Blow" = max_P_B1plus_Blow) %>%
+  mutate_at(vars(starts_with("Risk")), ~ as.character(round(100 * .x, 1))) %>%
+  mutate_at(vars(Closure), ~ as.character(round(100 * .x, 0))) %>%
+  mutate_at(vars(starts_with("First")),  ~ as.character(round( .x, 0))) %>%
+  mutate_at(vars(B1plus,Catch, IAV), ~ as.character(round(.x/1000, 0))) %>%
+  mutate_at(vars(F), ~ as.character(round(.x, 3))) %>%
+  pivot_longer(cols = -c(Rule, Period, Rec, Ass), names_to='indicator') %>%
+  pivot_wider(names_from = c(Rec,Ass), id_cols=c(Rule, Period,indicator)) %>%
+  arrange(Rule, indicator, Period) %>%
+  select(1,2,Indicator = 3,4,7,5,8,6,9)%>%
+  as.data.frame()
+  
+#to save for each rule one as to change the filter and the name of the image
+  aux %>%
+    filter(Rule == "HCR14") %>% select(-Rule) %>%
+    filter(
+      (Period != "all" & !Indicator %in% c("First year Blim", "First year Blow")) |
+      (Period == "all" & Indicator %in% c("First year Blim", "First year Blow"))
+    ) %>% 
+    mutate_at(vars(starts_with("REC")), replace_na, "\u2014") %>%
+    rename_at(vars(starts_with("REC")), ~ sub(pattern = "REC(.*)_ASS(.*)", replacement = "\\1 / \\2", x = .x, perl = TRUE)) %>%
+    gt(groupname_col = "Indicator") %>%
+    tab_spanner("Recruitment / Assessment", columns = 3:8, id = "rec_ass") %>%
+    tab_style(
+      locations = cells_column_spanners(spanners = "rec_ass"),
+      style = list(cell_text(weight = "bold")))%>%
+    gt::gtsave("psHCR14.png")
