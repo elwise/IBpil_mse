@@ -21,9 +21,7 @@ plot.dir <- file.path(res.dir,"plots")
 #==============================================================================
 
 # load libraries
-library(ggplot2)
-library(tidyr)
-library(dplyr)
+library(tidyverse)
 library(R.utils)
 
 library(r4ss)
@@ -444,40 +442,37 @@ df <- successyr%>%
 
 df$Rec2 <- factor(df$Rec, levels=c("REClow","REClowmed","RECmix"))
 
-for (rule in c('HCR7','HCR8','HCR9','HCR10','HCR13','HCR14', 'HCR0','HCR11')){
 
-ss <- subset(df, Rule == rule & Ass=='ASSss3')
-ss <- ss%>% pivot_longer(col=2:4,names_to='prob')
-
-
-ggplot(ss,aes(x=year,y=value,colour=prob) )+
-  geom_line()+
-  geom_hline(yintercept = 0.95, linetype = "longdash")+
-  facet_grid(.~Rec)+
-  ylim(c(0,1))+
-  ylab("Probability")+xlab("Year")+
-  scale_x_continuous(name="Year",breaks = seq(2020,2070,5))
-ggsave(paste0(plot.dir,'/probs_',rule,".png"))
-
-
+  ss <- df %>%
+    filter(Ass == 'ASSss3')%>%
+    filter(Rule %in% c('HCR7','HCR8','HCR9','HCR10','HCR13','HCR14'))
+  
+for (rule in c('HCR7','HCR8','HCR9','HCR10','HCR13','HCR14')){
+  
+  ss <- df %>%
+    filter(Ass == 'ASSss3' & Rule == rule)
+  
+  ggplot(data=ss)+
+    geom_line(data=subset(ss, Rec!="REClow"),aes(x=year,y=pblim,group=Rec,colour=Rec),size=1.2)+
+    geom_hline(yintercept = 0.95, linetype = "dashed")+
+    #ylim(c(0,1))+
+    geom_line(data=subset(ss, Rec=="REClow"),aes(x=year,y=pblow,group=Rec,colour=Rec),size=1.2)+
+    ylab("P(B1+>=Blim)")+xlab("Year")+
+    scale_x_continuous(name="Year",breaks = seq(1978,2070,5))+
+    scale_color_brewer(palette="Dark2")
+  ggsave(paste0(plot.dir,'/pblim_',rule,".png"))
+  
+##THESE PLOTS ARE NOT NECESSARY SINCE PZERO IS ALWAYS ZERO.
+##FOR THE NO FISHING SCENARIO IS DOES NOT MAKE SENSE EITHER
+  # ggplot(data=ss)+
+  #   geom_line(aes(x=year,y=pzero, group=Rec, colour=Rec),size=1.2)+
+  #   #ylim(c(0,1))+
+  #   ylab("P(TAC = 0)")+xlab("Year")+
+  #   scale_x_continuous(name="Year",breaks = seq(1978,2070,5))
+  # ggsave(paste0(plot.dir,'/pzero_',rule,".png"))
+  
 }
 
-####################################################
-#RISK 3 
 
-tt <- read.table(file.path(res.dir,"stats.csv"), header=T, sep=";")
-
-tt$Rec <- ordered(tt$Rec, c("REClow","REClowmed","RECmix"))
-
-head(tt)
-
-tlow <- subset(tt, period=='last' & Rec =='REClow' & Ass == 'ASSss3')
-
-ggplot(tlow, aes(x=Rule))+
-  geom_point(aes(y=max_P_B1plus_Blow))+
-  geom_point(aes(y=avg_P_B1plus_Blow),colour='red')+
-  geom_hline(yintercept = c(0.04,0.06))+
-  geom_hline(yintercept = 0.05,linetype='dashed')
-  
   
   

@@ -226,7 +226,7 @@ out.final <-
 rm(out.all, out.all.all, out.all.last, out.all.med, out.all10, out.all5)
 
 # Save data
-write.table( out.final, file=file.path(res.dir,"statsForRec.csv"), dec = ".", sep = ";",
+write.table( out.final, file=file.path(res.dir,"statsForRec_AllScenarios.csv"), dec = ".", sep = ";",
              row.names = FALSE)
 
 #period as an ordered factor for the figures

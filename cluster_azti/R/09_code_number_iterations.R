@@ -32,7 +32,7 @@ scenario.list <- sub("results_(.*).RData", "\\1", list.files(file.path(".","outp
 # proj.yrs: years to compute the sample size
 # Blim: Blim
 
-get_risks <- function(out.bio, sample_size, proj.yrs = 2061:2070, Blim ) {
+get_risks <- function(out.bio, sample_size, proj.yrs = 2041:2050, Blim ) {
   sampled_iters <- sample(unique(out.bio$iter), size = sample_size)
   xx <- subset(out.bio, out.bio$iter %in% sampled_iters & out.bio$year %in% proj.yrs)
   
@@ -93,7 +93,7 @@ out.boot <- out.boot %>%
   separate(scenario, into = c("Ass", "Rule", "Rec", "INN", "OER"), sep = "_",  remove=FALSE)  
 
 # save to file
-save(out.boot, file=file.path(".","output_long","out.boot4.RData"))
+save(out.boot, file=file.path(".","output_long","out.boot_30yrs.RData"))
 
 # change from wide to long format for plotting. only risks
 

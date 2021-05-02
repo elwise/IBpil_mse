@@ -83,86 +83,128 @@ row.names(df) <- NULL
 # Summary plots
 #==============================================================================
 
+# We don't want to include the outputs from the ICES rules with the old Reference Points
 #summary plot for Median B1plus
-ggplot(subset(df, indicator == 'Median_B1plus' & Ass=="ASSss3"),aes(x=Rule,y=period))+
+ggplot(subset(df, indicator == 'Median_B1plus' & Ass=="ASSss3" & !Rule %in% c("HCR0","HCR11")),aes(x=Rule,y=period))+
   geom_tile(aes(fill=cut(value/1000, breaks = c(-Inf, 196, 253,337,446,Inf))))+
   facet_grid(.~Rec)+
-  geom_text(aes(label=round(value/1000,0)),show.legend =F,size=2) +
+  geom_text(aes(label=round(value/1000,0)),show.legend =F,size=3) +
   scale_fill_manual(values=c("#D7191C","#FDAE61", "#FFFFBF" ,"#A6D96A", "#1A9641"),
                     name='B1plus (kt)', drop = F, guide = "coloursteps")+
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
-  scale_x_discrete(labels=c('HCR0'="ICES_med", 'HCR10'="HCR50", 
-                            'HCR11'="ICES_low", 'HCR7'="HCR0" ,'HCR8'= "HCR40", 'HCR9'="HCR45", 'HCR13'="HCR35",'HCR14'="HCR30"))
+  scale_x_discrete(labels=c('HCR10'="HCR50",'HCR7'="HCR0" ,'HCR8'= "HCR40", 'HCR9'="HCR45", 'HCR13'="HCR35",'HCR14'="HCR30"))
 ggsave(file.path(plot.dir,paste0("SummaryScenarios_Biomass.png")),height = 4,width = 7)
 
 #summary plot for catch
-ggplot(subset(df, indicator == 'Median_Catch' & Ass=="ASSss3"),aes(x=Rule,y=period))+
+ggplot(subset(df, indicator == 'Median_Catch' & Ass=="ASSss3" & !Rule %in% c("HCR0","HCR11")),aes(x=Rule,y=period))+
   geom_tile(aes(fill=cut(value/1000, breaks = c(-Inf,30, 35,40,45,50,Inf))))+
   facet_grid(.~Rec)+
-  geom_text(aes(label=round(value/1000,0)),show.legen=F) +
+  geom_text(aes(label=round(value/1000,0)),show.legend=F) +
   scale_fill_manual(values=c("#FFFFCC", "#D9F0A3" ,"#ADDD8E", "#78C679", "#31A354", "#006837"),
                     name='Catch (kt)', drop = F, guide = "coloursteps")+
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
-  scale_x_discrete(labels=c('HCR0'="ICES_med", 'HCR10'="HCR50", 
-                            'HCR11'="ICES_low", 'HCR7'="HCR0" ,'HCR8'= "HCR40", 'HCR9'="HCR45", 'HCR13'="HCR35",'HCR14'="HCR30"))
+  scale_x_discrete(labels=c('HCR10'="HCR50",'HCR7'="HCR0" ,'HCR8'= "HCR40", 'HCR9'="HCR45", 'HCR13'="HCR35",'HCR14'="HCR30"))
 ggsave(file.path(plot.dir,paste0("SummaryScenarios_Catch.png")),height = 4,width = 7)
 
 #summary plot for IAV
-ggplot(subset(df, indicator == 'IAV1_Catch' & Ass=="ASSss3"),aes(x=Rule,y=period))+
+ggplot(subset(df, indicator == 'IAV1_Catch' & Ass=="ASSss3" & !Rule %in% c("HCR0","HCR11")),aes(x=Rule,y=period))+
   geom_tile(aes(fill=cut(value/1000, breaks = c(-Inf,5,10,15,Inf))))+
   facet_grid(.~Rec)+
   geom_text(aes(label=round(value/1000,0)),show.legend=F) +
   scale_fill_manual(values=c("#FFFFB2" ,"#FECC5C" ,"#FD8D3C" ,"#E31A1C"),
                     name='Catch (kt)', drop = F, guide = "coloursteps")+
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
-  scale_x_discrete(labels=c('HCR0'="ICES_med", 'HCR10'="HCR50", 
-                            'HCR11'="ICES_low", 'HCR7'="HCR0" ,'HCR8'= "HCR40", 'HCR9'="HCR45", 'HCR13'="HCR35",'HCR14'="HCR30"))
+  scale_x_discrete(labels=c('HCR10'="HCR50",'HCR7'="HCR0" ,'HCR8'= "HCR40", 'HCR9'="HCR45", 'HCR13'="HCR35",'HCR14'="HCR30"))
 ggsave(file.path(plot.dir,paste0("SummaryScenarios_IAV.png")),height = 4,width = 7)
 
 #summary plot for Risk3
 
-ggplot(subset(df, indicator == 'max_P_B1plus_Blow' & Ass=="ASSss3"),aes(x=Rule,y=period))+
+ggplot(subset(df, indicator == 'max_P_B1plus_Blow' & Ass=="ASSss3" & !Rule %in% c("HCR0","HCR11")),aes(x=Rule,y=period))+
   geom_tile(aes(fill=cut(value*100, breaks = c(-Inf,3,4,5,Inf))))+
   facet_grid(.~Rec)+
   geom_text(aes(label=round(value*100,1)),show.legend=F, size=2) +
   scale_fill_manual(values = c( "#1A9641","#A6D96A" ,"#FDAE61","#D7191C" ),name='Risk3', drop = F, guide = "coloursteps")+
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
-  scale_x_discrete(labels=c('HCR0'="ICES_med", 'HCR10'="HCR50", 
-                            'HCR11'="ICES_low", 'HCR7'="HCR0" ,'HCR8'= "HCR40", 'HCR9'="HCR45", 'HCR13'="HCR35",'HCR14'="HCR30"))
+  scale_x_discrete(labels=c('HCR10'="HCR50",'HCR7'="HCR0" ,'HCR8'= "HCR40", 'HCR9'="HCR45", 'HCR13'="HCR35",'HCR14'="HCR30"))
 ggsave(file.path(plot.dir,paste0("SummaryScenarios_Risk3Blow.png")),height = 4,width = 7)
 
 
-ggplot(subset(df, indicator == 'max_P_B1plus_Blim' & Ass=="ASSss3"),aes(x=Rule,y=period))+
+ggplot(subset(df, indicator == 'max_P_B1plus_Blim' & Ass=="ASSss3" & !Rule %in% c("HCR0","HCR11")),aes(x=Rule,y=period))+
   geom_tile(aes(fill=cut(value*100, breaks = c(-Inf,3,4,5,Inf))))+
   facet_grid(.~Rec)+
   geom_text(aes(label=round(value*100,1)),show.legend=F, size=2) +
   scale_fill_manual(values = c( "#1A9641","#A6D96A" ,"#FDAE61","#D7191C" ),name='Risk3', drop = F, guide = "coloursteps")+
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
-  scale_x_discrete(labels=c('HCR0'="ICES_med", 'HCR10'="HCR50", 
-                            'HCR11'="ICES_low", 'HCR7'="HCR0" ,'HCR8'= "HCR40", 'HCR9'="HCR45", 'HCR13'="HCR35",'HCR14'="HCR30"))
+  scale_x_discrete(labels=c('HCR10'="HCR50",'HCR7'="HCR0" ,'HCR8'= "HCR40", 'HCR9'="HCR45", 'HCR13'="HCR35",'HCR14'="HCR30"))
 ggsave(file.path(plot.dir,paste0("SummaryScenarios_Risk3Blim.png")),height = 4,width = 7)
 
 #summary plot for Risk1
-ggplot(subset(df, indicator == 'avg_P_B1plus_Blow' & Ass=="ASSss3"),aes(x=Rule,y=period))+
+ggplot(subset(df, indicator == 'avg_P_B1plus_Blow' & Ass=="ASSss3" & !Rule %in% c("HCR0","HCR11")),aes(x=Rule,y=period))+
   geom_tile(aes(fill=cut(value*100, breaks = c(-Inf,3,4,5,Inf))))+
   facet_grid(.~Rec)+
   geom_text(aes(label=round(value*100,1)),show.legend=F, size=2) +
   scale_fill_manual(values = c( "#1A9641","#A6D96A" ,"#FDAE61","#D7191C" ),name='Risk1', drop = F, guide = "coloursteps")+
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
-  scale_x_discrete(labels=c('HCR0'="ICES_med", 'HCR10'="HCR50", 
-                            'HCR11'="ICES_low", 'HCR7'="HCR0" ,'HCR8'= "HCR40", 'HCR9'="HCR45", 'HCR13'="HCR35",'HCR14'="HCR30"))
+  scale_x_discrete(labels=c('HCR10'="HCR50",'HCR7'="HCR0" ,'HCR8'= "HCR40", 'HCR9'="HCR45", 'HCR13'="HCR35",'HCR14'="HCR30"))
 ggsave(file.path(plot.dir,paste0("SummaryScenarios_Risk1Blow.png")),height = 4,width = 7)
 
-ggplot(subset(df, indicator == 'avg_P_B1plus_Blim' & Ass=="ASSss3"),aes(x=Rule,y=period))+
+ggplot(subset(df, indicator == 'avg_P_B1plus_Blim' & Ass=="ASSss3" & !Rule %in% c("HCR0","HCR11")),aes(x=Rule,y=period))+
   geom_tile(aes(fill=cut(value*100, breaks = c(-Inf,3,4,5,Inf))))+
   facet_grid(.~Rec)+
   geom_text(aes(label=round(value*100,1)),show.legend=F, size=2) +
   scale_fill_manual(values = c( "#1A9641","#A6D96A" ,"#FDAE61","#D7191C" ),name='Risk1', drop = F, guide = "coloursteps")+
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
-  scale_x_discrete(labels=c('HCR0'="ICES_med", 'HCR10'="HCR50", 
-                            'HCR11'="ICES_low", 'HCR7'="HCR0" ,'HCR8'= "HCR40", 'HCR9'="HCR45", 'HCR13'="HCR35",'HCR14'="HCR30"))
+  scale_x_discrete(labels=c('HCR10'="HCR50",'HCR7'="HCR0" ,'HCR8'= "HCR40", 'HCR9'="HCR45", 'HCR13'="HCR35",'HCR14'="HCR30"))
 ggsave(file.path(plot.dir,paste0("SummaryScenarios_Risk1Blim.png")),height = 4,width = 7)
 
+
+#Final plots with risk 3 just for the period needed
+#If REC %in% REClow & REClowmed then period 2041:2050
+#else period 2061:2070
+
+r30_low <- subset(df, indicator == 'max_P_B1plus_Blow' & Ass=="ASSss3" &
+                !Rule %in% c("HCR0","HCR11") & period == 'med' & Rec=="REClow")
+
+r30_lowmed <- subset(df, indicator == 'max_P_B1plus_Blim' & Ass=="ASSss3" &
+                    !Rule %in% c("HCR0","HCR11") & period == 'med' & Rec=="REClowmed")
+
+r50_mix <- subset(df, indicator == 'max_P_B1plus_Blim' & Ass=="ASSss3" &
+                !Rule %in% c("HCR0","HCR11") & period == 'last' & Rec == "RECmix")
+
+risk3 <- rbind(r30_low,r30_lowmed,r50_mix)
+  
+ggplot(data=risk3,aes(x=Rule,y=value))+
+  geom_point(aes(colour=cut(value*100, breaks = c(-Inf,3,5,6,Inf))),size=2)+
+  facet_grid(.~Rec)+
+  geom_text(aes(label=round(value*100,1)),show.legend=F, size=4,vjust=-1) +
+  scale_colour_manual(values = c( "#1A9641","#A6D96A" ,"#FDAE61","#D7191C" ),name='Risk3', drop = F, guide = "coloursteps")+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
+  scale_x_discrete(labels=c('HCR10'="HCR50",'HCR7'="HCR0" ,'HCR8'= "HCR40", 'HCR9'="HCR45", 'HCR13'="HCR35",'HCR14'="HCR30")) +
+  expand_limits(y = 0.2)+
+  scale_y_continuous(labels=scales::label_percent(),name="P(B1+ < Blim)")
+ggsave(file.path(plot.dir,paste0("Final_Risk3.png")),height = 4,width = 7)
+
+#Final plots with risk 3 just for the period needed
+#2061:2070 for all scenarios of productivity
+
+r30_low <- subset(df, indicator == 'max_P_B1plus_Blow' & Ass=="ASSss3" &
+                    !Rule %in% c("HCR0","HCR11") & period == 'last' & Rec=="REClow")
+
+r30_med_mix <- subset(df, indicator == 'max_P_B1plus_Blim' & Ass=="ASSss3" &
+                       !Rule %in% c("HCR0","HCR11") & period == 'last' & Rec %in% c("REClowmed","RECmix"))
+
+risk3 <- rbind(r30_low,r30_med_mix)
+
+ggplot(data=risk3,aes(x=Rule,y=value))+
+  geom_point(aes(colour=cut(value*100, breaks = c(-Inf,3,5,6,Inf))),size=2)+
+  facet_grid(.~Rec)+
+  geom_text(aes(label=round(value*100,1)),show.legend=F, size=4,vjust=-1) +
+  scale_colour_manual(values = c( "#1A9641","#A6D96A" ,"#FDAE61","#D7191C" ),name='Risk3', drop = F, guide = "coloursteps")+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
+  scale_x_discrete(labels=c('HCR10'="HCR50",'HCR7'="HCR0" ,'HCR8'= "HCR40", 'HCR9'="HCR45", 'HCR13'="HCR35",'HCR14'="HCR30")) +
+  expand_limits(y = 0.2)+
+  scale_y_continuous(labels=scales::label_percent(),name="P(B1+ < Blim)")
+ggsave(file.path(plot.dir,paste0("Final_Risk3_version50yrs.png")),height = 4,width = 7)
 
 
 #==============================================================================
