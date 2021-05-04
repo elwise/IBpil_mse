@@ -218,7 +218,7 @@ ggplot(df2, aes(x=Fscan)) +
   labs(y = "Biomass 1+",x = "Ftarget")
   ggsave(paste0(res.plots,'/',rr,"_ASSs3_constantF_SSBDistribution_FmsyIntervals.png"))
   
-  out <- data.frame(Rec = rr, Fmsy=FMSY, FmsyUpper = fmsy.upper, FmsyLower = fmsy.lower, Catch = df2$Median_Catch[df2$Fscan == FMSY])
+  out <- data.frame(Rec = rr, Fmsy=icesRound(FMSY), FmsyUpper = fmsy.upper, FmsyLower = fmsy.lower, Catch = df2$Median_Catch[df2$Fscan == icesRound(FMSY)])
   
   out.Fmsy <- rbind(out.Fmsy,out)
 

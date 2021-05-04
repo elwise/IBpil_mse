@@ -180,13 +180,25 @@ facet_names <- c('catch'= "Catch",'f'="Fbar",'rec'="Rec",'ssb'="B1+", 'HCR0'="IC
                  'HCR11'="ICES_low", 'HCR7'="HCR0" ,'HCR8'= "HCR40", 'HCR9'="HCR45", 'HCR13'="HCR35",'HCR14'="HCR30",
                  'REClow' = 'REClow', 'REClowmed'= 'REClowmed','RECmix'='RECmix' )
 
-###For HCR7 
-gg <- subset(ww, Rule %in% c('HCR7'))
-aa <- subset(out.iters, Rule %in% c('HCR7'))
+##worm plots 
+
+for (hcr in c("HCR14", "HCR13","HCR8", "HCR9", "HCR10","HCR7")){
+  
+  gg <- subset(ww, Rule == hcr)
+  aa <- subset(out.iters, Rule == hcr)
 
 for (rr in c("REClow","REClowmed","RECmix")){
+  
+  if (rr == 'RECmix'){
   aux <- subset(gg,Rec==rr)
   aux.iters <- subset(aa,Rec==rr)
+  }
+  
+  else {
+    aux <- subset(gg,Rec==rr & year < 2051)
+    aux.iters <- subset(aa,Rec==rr & year < 2051)
+    }
+  
   p <- ggplot(data=aux,aes(x=year, y=q50))+
     geom_ribbon(data=aux,aes(ymin = q05, ymax = q95),alpha=0.2,show.legend = F,fill="#F9840044") +
     geom_line(data=aux,color="#F98400")+
@@ -195,184 +207,16 @@ for (rr in c("REClow","REClowmed","RECmix")){
     facet_grid(indicator2~Rule,scales="free",labeller = as_labeller(facet_names))+
     geom_vline(xintercept = 2020, linetype = "dotted",color="#00A08A")+
     ylab("") +
-    scale_x_continuous(name="Year",breaks = seq(1978,2070,10))+
+    scale_x_continuous(name="Year",breaks = seq(1978,max(aux$year),10))+
     scale_y_continuous(breaks=scales::pretty_breaks(n = 6))
   
   
   p + geom_hline(aes(yintercept = 337.448), data = subset(gg, indicator=="ssb"),linetype="dashed",color="#00A08A") +
     geom_hline(aes(yintercept = 196.334), data = subset(gg,indicator=="ssb"),linetype="dashed",color="#00A08A")
-  ggsave(paste0(plot.dir,'/',rr,"_HCR7.png"),width = 3.92,height=6.65)
+  ggsave(paste0(plot.dir,'/',rr,"_",hcr,".png"),width = 5,height=6.65)
 }
 
-
-###For HCR8 
-gg <- subset(ww, Rule %in% c('HCR8'))
-aa <- subset(out.iters, Rule %in% c('HCR8'))
-
-for (rr in c("REClow","REClowmed","RECmix")){
-  aux <- subset(gg,Rec==rr)
-  aux.iters <- subset(aa,Rec==rr)
-  p <- ggplot(data=aux,aes(x=year, y=q50))+
-    geom_ribbon(data=aux,aes(ymin = q05, ymax = q95),alpha=0.2,show.legend = F,fill="#F9840044") +
-    geom_line(data=aux,color="#F98400")+
-    geom_line(data=subset(aux.iters,iter==45),color="green3",aes(x=year,y=value),alpha=0.6)+
-    geom_line(data=subset(aux.iters,iter==235),color="blue",aes(x=year,y=value),alpha=0.6)+
-    facet_grid(indicator2~Rule,scales="free",labeller = as_labeller(facet_names))+
-    geom_vline(xintercept = 2020, linetype = "dotted",color="#00A08A")+
-    ylab("") +
-    scale_x_continuous(name="Year",breaks = seq(1978,2070,10))+
-    scale_y_continuous(breaks=scales::pretty_breaks(n = 6))
-  
-  
-  p + geom_hline(aes(yintercept = 337.448), data = subset(gg, indicator=="ssb"),linetype="dashed",color="#00A08A") +
-    geom_hline(aes(yintercept = 196.334), data = subset(gg,indicator=="ssb"),linetype="dashed",color="#00A08A")
-  ggsave(paste0(plot.dir,'/',rr,"_HCR8.png"),width = 3.92,height=6.65)
 }
-
-###For HCR9 
-gg <- subset(ww, Rule %in% c('HCR9'))
-aa <- subset(out.iters, Rule %in% c('HCR9'))
-
-for (rr in c("REClow","REClowmed","RECmix")){
-  aux <- subset(gg,Rec==rr)
-  aux.iters <- subset(aa,Rec==rr)
-  p <- ggplot(data=aux,aes(x=year, y=q50))+
-    geom_ribbon(data=aux,aes(ymin = q05, ymax = q95),alpha=0.2,show.legend = F,fill="#F9840044") +
-    geom_line(data=aux,color="#F98400")+
-    geom_line(data=subset(aux.iters,iter==45),color="green3",aes(x=year,y=value),alpha=0.6)+
-    geom_line(data=subset(aux.iters,iter==235),color="blue",aes(x=year,y=value),alpha=0.6)+
-    facet_grid(indicator2~Rule,scales="free",labeller = as_labeller(facet_names))+
-    geom_vline(xintercept = 2020, linetype = "dotted",color="#00A08A")+
-    ylab("") +
-    scale_x_continuous(name="Year",breaks = seq(1978,2070,10))+
-    scale_y_continuous(breaks=scales::pretty_breaks(n = 6))
-  
-  
-  p + geom_hline(aes(yintercept = 337.448), data = subset(gg, indicator=="ssb"),linetype="dashed",color="#00A08A") +
-    geom_hline(aes(yintercept = 196.334), data = subset(gg,indicator=="ssb"),linetype="dashed",color="#00A08A")
-  ggsave(paste0(plot.dir,'/',rr,"_HCR9.png"),width = 3.92,height=6.65)
-}
-
-###For HCR10 
-gg <- subset(ww, Rule %in% c('HCR10'))
-aa <- subset(out.iters, Rule %in% c('HCR10'))
-
-for (rr in c("REClow","REClowmed","RECmix")){
-  aux <- subset(gg,Rec==rr)
-  aux.iters <- subset(aa,Rec==rr)
-  p <- ggplot(data=aux,aes(x=year, y=q50))+
-    geom_ribbon(data=aux,aes(ymin = q05, ymax = q95),alpha=0.2,show.legend = F,fill="#F9840044") +
-    geom_line(data=aux,color="#F98400")+
-    geom_line(data=subset(aux.iters,iter==45),color="green3",aes(x=year,y=value),alpha=0.6)+
-    geom_line(data=subset(aux.iters,iter==235),color="blue",aes(x=year,y=value),alpha=0.6)+
-    facet_grid(indicator2~Rule,scales="free",labeller = as_labeller(facet_names))+
-    geom_vline(xintercept = 2020, linetype = "dotted",color="#00A08A")+
-    ylab("") +
-    scale_x_continuous(name="Year",breaks = seq(1978,2070,10))+
-    scale_y_continuous(breaks=scales::pretty_breaks(n = 6))
-  
-  
-  p + geom_hline(aes(yintercept = 337.448), data = subset(gg, indicator=="ssb"),linetype="dashed",color="#00A08A") +
-    geom_hline(aes(yintercept = 196.334), data = subset(gg,indicator=="ssb"),linetype="dashed",color="#00A08A")
-  ggsave(paste0(plot.dir,'/',rr,"_HCR10.png"),width = 3.92,height=6.65)
-}
-
-###For HCR14 
-gg <- subset(ww, Rule %in% c('HCR14'))
-aa <- subset(out.iters, Rule %in% c('HCR14'))
-
-for (rr in c("REClow","REClowmed","RECmix")){
-  aux <- subset(gg,Rec==rr)
-  aux.iters <- subset(aa,Rec==rr)
-  p <- ggplot(data=aux,aes(x=year, y=q50))+
-    geom_ribbon(data=aux,aes(ymin = q05, ymax = q95),alpha=0.2,show.legend = F,fill="#F9840044") +
-    geom_line(data=aux,color="#F98400")+
-    geom_line(data=subset(aux.iters,iter==45),color="green3",aes(x=year,y=value),alpha=0.6)+
-    geom_line(data=subset(aux.iters,iter==235),color="blue",aes(x=year,y=value),alpha=0.6)+
-    facet_grid(indicator2~Rule,scales="free",labeller = as_labeller(facet_names))+
-    geom_vline(xintercept = 2020, linetype = "dotted",color="#00A08A")+
-    ylab("") +
-    scale_x_continuous(name="Year",breaks = seq(1978,2070,10))+
-    scale_y_continuous(breaks=scales::pretty_breaks(n = 6))
-  
-  
-  p + geom_hline(aes(yintercept = 337.448), data = subset(gg, indicator=="ssb"),linetype="dashed",color="#00A08A") +
-    geom_hline(aes(yintercept = 196.334), data = subset(gg,indicator=="ssb"),linetype="dashed",color="#00A08A")
-  ggsave(paste0(plot.dir,'/',rr,"_HCR14.png"),width = 3.92,height=6.65)
-}
-
-###For HCR13 
-gg <- subset(ww, Rule %in% c('HCR13'))
-aa <- subset(out.iters, Rule %in% c('HCR13'))
-
-for (rr in c("REClow","REClowmed","RECmix")){
-  aux <- subset(gg,Rec==rr)
-  aux.iters <- subset(aa,Rec==rr)
-  p <- ggplot(data=aux,aes(x=year, y=q50))+
-    geom_ribbon(data=aux,aes(ymin = q05, ymax = q95),alpha=0.2,show.legend = F,fill="#F9840044") +
-    geom_line(data=aux,color="#F98400")+
-    geom_line(data=subset(aux.iters,iter==45),color="green3",aes(x=year,y=value),alpha=0.6)+
-    geom_line(data=subset(aux.iters,iter==235),color="blue",aes(x=year,y=value),alpha=0.6)+
-    facet_grid(indicator2~Rule,scales="free",labeller = as_labeller(facet_names))+
-    geom_vline(xintercept = 2020, linetype = "dotted",color="#00A08A")+
-    ylab("") +
-    scale_x_continuous(name="Year",breaks = seq(1978,2070,10))+
-    scale_y_continuous(breaks=scales::pretty_breaks(n = 6))
-  
-  
-  p + geom_hline(aes(yintercept = 337.448), data = subset(gg, indicator=="ssb"),linetype="dashed",color="#00A08A") +
-    geom_hline(aes(yintercept = 196.334), data = subset(gg,indicator=="ssb"),linetype="dashed",color="#00A08A")
-  ggsave(paste0(plot.dir,'/',rr,"_HCR13.png"),width = 3.92,height=6.65)
-}
-
-###For HCR0 
-gg <- subset(ww, Rule %in% c('HCR0'))
-aa <- subset(out.iters, Rule %in% c('HCR0'))
-
-for (rr in c("REClow","REClowmed","RECmix")){
-  aux <- subset(gg,Rec==rr)
-  aux.iters <- subset(aa,Rec==rr)
-  p <- ggplot(data=aux,aes(x=year, y=q50))+
-    geom_ribbon(data=aux,aes(ymin = q05, ymax = q95),alpha=0.2,show.legend = F,fill="#F9840044") +
-    geom_line(data=aux,color="#F98400")+
-    geom_line(data=subset(aux.iters,iter==45),color="green3",aes(x=year,y=value),alpha=0.6)+
-    geom_line(data=subset(aux.iters,iter==235),color="blue",aes(x=year,y=value),alpha=0.6)+
-    facet_grid(indicator2~Rule,scales="free",labeller = as_labeller(facet_names))+
-    geom_vline(xintercept = 2020, linetype = "dotted",color="#00A08A")+
-    ylab("") +
-    scale_x_continuous(name="Year",breaks = seq(1978,2070,10))+
-    scale_y_continuous(breaks=scales::pretty_breaks(n = 6))
-  
-  
-  p + geom_hline(aes(yintercept = 337.448), data = subset(gg, indicator=="ssb"),linetype="dashed",color="#00A08A") +
-    geom_hline(aes(yintercept = 196.334), data = subset(gg,indicator=="ssb"),linetype="dashed",color="#00A08A")
-  ggsave(paste0(plot.dir,'/',rr,"_HCR0.png"),width = 3.92,height=6.65)
-}
-
-###For HCR11 
-gg <- subset(ww, Rule %in% c('HCR11'))
-aa <- subset(out.iters, Rule %in% c('HCR11'))
-
-for (rr in c("REClow","REClowmed","RECmix")){
-  aux <- subset(gg,Rec==rr)
-  aux.iters <- subset(aa,Rec==rr)
-  p <- ggplot(data=aux,aes(x=year, y=q50))+
-    geom_ribbon(data=aux,aes(ymin = q05, ymax = q95),alpha=0.2,show.legend = F,fill="#F9840044") +
-    geom_line(data=aux,color="#F98400")+
-    geom_line(data=subset(aux.iters,iter==45),color="green3",aes(x=year,y=value),alpha=0.6)+
-    geom_line(data=subset(aux.iters,iter==235),color="blue",aes(x=year,y=value),alpha=0.6)+
-    facet_grid(indicator2~Rule,scales="free",labeller = as_labeller(facet_names))+
-    geom_vline(xintercept = 2020, linetype = "dotted",color="#00A08A")+
-    ylab("") +
-    scale_x_continuous(name="Year",breaks = seq(1978,2070,10))+
-    scale_y_continuous(breaks=scales::pretty_breaks(n = 6))
-  
-  
-  p + geom_hline(aes(yintercept = 337.448), data = subset(gg, indicator=="ssb"),linetype="dashed",color="#00A08A") +
-    geom_hline(aes(yintercept = 196.334), data = subset(gg,indicator=="ssb"),linetype="dashed",color="#00A08A")
-  ggsave(paste0(plot.dir,'/',rr,"_HCR11.png"),width = 3.92,height=6.65)
-}
-
 
 #######################
 ###Boxplots by year###
@@ -428,7 +272,7 @@ for (scenario in scenario_list){
   load(file.path(res.dir,paste("scenarios/results_",scenario,".RData",sep="")))
   aux <- out.bio %>% 
     separate(scenario, into = c("Ass", "Rule", "Rec", "INN", "OER"), sep = "_", remove=FALSE)%>%
-    filter(year>2020)%>%
+    filter(year>2019)%>%
     group_by(year) %>% 
     summarize(pblim=sum(biomass>=337448)/length(biomass),
               pblow=sum(biomass>=196334)/length(biomass),
@@ -443,24 +287,25 @@ df <- successyr%>%
 df$Rec2 <- factor(df$Rec, levels=c("REClow","REClowmed","RECmix"))
 
 
-  ss <- df %>%
-    filter(Ass == 'ASSss3')%>%
-    filter(Rule %in% c('HCR7','HCR8','HCR9','HCR10','HCR13','HCR14'))
-  
 for (rule in c('HCR7','HCR8','HCR9','HCR10','HCR13','HCR14')){
   
   ss <- df %>%
-    filter(Ass == 'ASSss3' & Rule == rule)
+    filter(
+      (year < 2051 & !Rec %in% c("RECmix")) | 
+      (year < 2071 & Rec == "RECmix")) %>%
+    filter(Rule == rule & Ass == 'ASSss3')
   
   ggplot(data=ss)+
-    geom_line(data=subset(ss, Rec!="REClow"),aes(x=year,y=pblim,group=Rec,colour=Rec),size=1.2)+
+    geom_line(data=subset(ss, Rec!="REClow"),aes(x=year,y=pblim,group=Rec,colour=Rec),size=1.5)+
     geom_hline(yintercept = 0.95, linetype = "dashed")+
-    #ylim(c(0,1))+
-    geom_line(data=subset(ss, Rec=="REClow"),aes(x=year,y=pblow,group=Rec,colour=Rec),size=1.2)+
+    geom_line(data=subset(ss, Rec=="REClow"),aes(x=year,y=pblow,group=Rec,colour=Rec),size=1.5)+
     ylab("P(B1+>=Blim)")+xlab("Year")+
-    scale_x_continuous(name="Year",breaks = seq(1978,2070,5))+
-    scale_color_brewer(palette="Dark2")
-  ggsave(paste0(plot.dir,'/pblim_',rule,".png"))
+    scale_x_continuous(name="Year",breaks = seq(2020,2070,5))+
+    scale_color_brewer(palette="Dark2") +
+    theme(
+      axis.text=element_text(size=14),
+    )
+  ggsave(paste0(plot.dir,'/pblim_',rule,".png"),width=10)
   
 ##THESE PLOTS ARE NOT NECESSARY SINCE PZERO IS ALWAYS ZERO.
 ##FOR THE NO FISHING SCENARIO IS DOES NOT MAKE SENSE EITHER

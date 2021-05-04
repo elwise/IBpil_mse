@@ -24,7 +24,6 @@ rm(list=ls())
 # #==============================================================================
 # 
 #wd <- "D:/IPMA/SARDINE/ADVICE_MP/FLBEIA_mseIBpil"
-# wd <- "/home/azevedom/FLBEIA_mseIBpil/"
 # setwd(wd)
 
 

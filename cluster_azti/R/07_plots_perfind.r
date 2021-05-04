@@ -164,47 +164,31 @@ ggsave(file.path(plot.dir,paste0("SummaryScenarios_Risk1Blim.png")),height = 4,w
 
 r30_low <- subset(df, indicator == 'max_P_B1plus_Blow' & Ass=="ASSss3" &
                 !Rule %in% c("HCR0","HCR11") & period == 'med' & Rec=="REClow")
+r30_low$iters <- rep(1000,dim(r30_low)[1])
+
+r30_low <- rbind(r30_low, c('med','ASSss3_HCR9_REClow_INNvar_OERnaq','ASSss3', 'HCR9','REClow','INNvar','OERnaq','max_P_B1plus_Blow',0.0415,10000))
+r30_low <- rbind(r30_low, c('med','ASSss3_HCR10_REClow_INNvar_OERnaq','ASSss3', 'HCR10','REClow','INNvar','OERnaq','max_P_B1plus_Blow',0.0415,10000))
 
 r30_lowmed <- subset(df, indicator == 'max_P_B1plus_Blim' & Ass=="ASSss3" &
                     !Rule %in% c("HCR0","HCR11") & period == 'med' & Rec=="REClowmed")
+r30_lowmed$iters <- rep(1000,dim(r30_lowmed)[1])
 
 r50_mix <- subset(df, indicator == 'max_P_B1plus_Blim' & Ass=="ASSss3" &
                 !Rule %in% c("HCR0","HCR11") & period == 'last' & Rec == "RECmix")
+r50_mix$iters <- rep(1000,dim(r50_mix)[1])
 
 risk3 <- rbind(r30_low,r30_lowmed,r50_mix)
   
-ggplot(data=risk3,aes(x=Rule,y=value))+
-  geom_point(aes(colour=cut(value*100, breaks = c(-Inf,3,5,6,Inf))),size=2)+
+ggplot(data=risk3,aes(x=Rule,y=as.numeric(value)))+
+  geom_point(aes(colour=cut(as.numeric(value)*100, breaks = c(-Inf,3,5,6,Inf)),shape=iters),size=2)+
   facet_grid(.~Rec)+
-  geom_text(aes(label=round(value*100,1)),show.legend=F, size=4,vjust=-1) +
+  geom_text(aes(label=round(as.numeric(value)*100,1)),show.legend=F, size=3,vjust=-1) +
   scale_colour_manual(values = c( "#1A9641","#A6D96A" ,"#FDAE61","#D7191C" ),name='Risk3', drop = F, guide = "coloursteps")+
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
   scale_x_discrete(labels=c('HCR10'="HCR50",'HCR7'="HCR0" ,'HCR8'= "HCR40", 'HCR9'="HCR45", 'HCR13'="HCR35",'HCR14'="HCR30")) +
   expand_limits(y = 0.2)+
-  scale_y_continuous(labels=scales::label_percent(),name="P(B1+ < Blim)")
-ggsave(file.path(plot.dir,paste0("Final_Risk3.png")),height = 4,width = 7)
-
-#Final plots with risk 3 just for the period needed
-#2061:2070 for all scenarios of productivity
-
-r30_low <- subset(df, indicator == 'max_P_B1plus_Blow' & Ass=="ASSss3" &
-                    !Rule %in% c("HCR0","HCR11") & period == 'last' & Rec=="REClow")
-
-r30_med_mix <- subset(df, indicator == 'max_P_B1plus_Blim' & Ass=="ASSss3" &
-                       !Rule %in% c("HCR0","HCR11") & period == 'last' & Rec %in% c("REClowmed","RECmix"))
-
-risk3 <- rbind(r30_low,r30_med_mix)
-
-ggplot(data=risk3,aes(x=Rule,y=value))+
-  geom_point(aes(colour=cut(value*100, breaks = c(-Inf,3,5,6,Inf))),size=2)+
-  facet_grid(.~Rec)+
-  geom_text(aes(label=round(value*100,1)),show.legend=F, size=4,vjust=-1) +
-  scale_colour_manual(values = c( "#1A9641","#A6D96A" ,"#FDAE61","#D7191C" ),name='Risk3', drop = F, guide = "coloursteps")+
-  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
-  scale_x_discrete(labels=c('HCR10'="HCR50",'HCR7'="HCR0" ,'HCR8'= "HCR40", 'HCR9'="HCR45", 'HCR13'="HCR35",'HCR14'="HCR30")) +
-  expand_limits(y = 0.2)+
-  scale_y_continuous(labels=scales::label_percent(),name="P(B1+ < Blim)")
-ggsave(file.path(plot.dir,paste0("Final_Risk3_version50yrs.png")),height = 4,width = 7)
+  scale_y_continuous(labels=scales::label_percent(),name="P(B1+ <= Blim)")
+ggsave(file.path(plot.dir,paste0("Final_Risk3.png")),height = 6,width = 7)
 
 
 #==============================================================================

@@ -102,7 +102,7 @@ for (cs in scenario_list){
   
   obj <- perfInd.pil( obj.bio="out.bio",
                       scenario=cs, file.dat=file.path(res.dir,"scenarios",paste("results_",cs,".RData",sep="")),
-                      proj.yrs=2021:2025, Blim=337448, Blow=196334)
+                      proj.yrs=2021:2026, Blim=337448, Blow=196334)
   
   out.all5 <- rbind(out.all5, obj)
   
@@ -159,7 +159,7 @@ for (cs in scenario_list){
 out.all.last <- cbind(period=rep("last",dim(out.all.last)[1]),out.all.last)
 
 
-# all projection period 2019:2048
+# all projection period 2021:2070
 
 out.all.all <- NULL
 
