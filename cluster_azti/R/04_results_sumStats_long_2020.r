@@ -76,7 +76,7 @@ for (cs in scenario_list){
   
   obj$scenario <- as.character(cs)
   # combine all cases
-  dat.bio.q <- rbind( dat.bio.q, bioSumQ(obj))
+  dat.bio.q <- rbind( dat.bio.q, as.data.frame(bioSumQ(obj)))
   rm(obj)
   
 }

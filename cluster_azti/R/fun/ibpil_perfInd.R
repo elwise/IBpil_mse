@@ -45,7 +45,7 @@ perfInd.pil <- function( obj.bio="out.bio",scenario, file.dat,
   # out <- NULL
   
   # quantiles SSB
-  out <- c(quantile(xx[,'ssb'],c(0.05,0.10,0.5,0.90,0.95)))
+  out <- c(quantile(xx[,'ssb'],c(0.05,0.10,0.5,0.90,0.95),na.rm= T))
   
   # Mean SSB
   tmp <- mean(xx[,'ssb'])

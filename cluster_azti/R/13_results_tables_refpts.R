@@ -71,7 +71,7 @@ rm( qs, dat.bio.q)
 
 #! NOTE: different Blim for each scenario!!!!!
 
-#initial years of projection 2021:2025
+#initial years of projection 2021:2026
 
 out.all5 <- NULL
 
@@ -79,7 +79,7 @@ for (cs in scenario_list){
   
   obj <- perfInd.pil( obj.bio="out.bio",
                       scenario=cs, file.dat=file.path(res.dir,"output_scenarios",paste("results_",cs,".RData",sep="")),
-                      proj.yrs=2021:2025, Blim=337448, Blow=196334)
+                      proj.yrs=2021:2026, Blim=337448, Blow=196334)
   
   out.all5 <- rbind(out.all5, obj)
   
@@ -103,23 +103,8 @@ for (cs in scenario_list){
 
 out.all10 <- cbind(period=rep("short",dim(out.all10)[1]),out.all10)
 
+
 #last 10 years of a 30 yr projection 2041:2050
-
-out.all.med <- NULL
-
-for (cs in scenario_list){
-  
-  obj <- perfInd.pil( obj.bio="out.bio",  
-                      scenario=cs, file.dat=file.path(res.dir,"output_scenarios",paste("results_",cs,".RData",sep="")),
-                      proj.yrs=2041:2050, Blim=337448, Blow=196334)
-  
-  out.all.med <- rbind(out.all.med, obj)
-  
-}
-
-out.all.med <- cbind(period=rep("med",dim(out.all.med)[1]),out.all.med)
-
-#last 10 years of projection 2061:2070
 
 out.all.last <- NULL
 
@@ -127,7 +112,7 @@ for (cs in scenario_list){
   
   obj <- perfInd.pil( obj.bio="out.bio",  
                       scenario=cs, file.dat=file.path(res.dir,"output_scenarios",paste("results_",cs,".RData",sep="")),
-                      proj.yrs=2061:2070, Blim=337448, Blow=196334)
+                      proj.yrs=2041:2050, Blim=337448, Blow=196334)
   
   out.all.last <- rbind(out.all.last, obj)
   
@@ -136,7 +121,7 @@ for (cs in scenario_list){
 out.all.last <- cbind(period=rep("last",dim(out.all.last)[1]),out.all.last)
 
 
-# all projection period 2019:2048
+# all projection period 2021:2050
 
 out.all.all <- NULL
 
@@ -144,7 +129,7 @@ for (cs in scenario_list){
   
   obj <- perfInd.pil( obj.bio="out.bio",  
                       scenario=cs, file.dat=file.path(res.dir,"output_scenarios",paste("results_",cs,".RData",sep="")),
-                      proj.yrs=2021:2070, Blim=337448, Blow=196334)
+                      proj.yrs=2021:2050, Blim=337448, Blow=196334)
   
   out.all.all <- rbind(out.all.all, obj)
   
@@ -155,7 +140,7 @@ out.all.all <- cbind(period=rep("all",dim(out.all.all)[1]), out.all.all)
 
 # put all performance stats (for all periods) together
 
-out.all <- rbind(out.all5, out.all10, out.all.med, out.all.last, out.all.all)
+out.all <- rbind(out.all5, out.all10, out.all.last, out.all.all)
 
 # Separate scenario into different columns
 out.final <-  out.all %>%

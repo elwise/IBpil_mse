@@ -276,7 +276,8 @@ for (scenario in scenario_list){
     group_by(year) %>% 
     summarize(pblim=sum(biomass>=337448)/length(biomass),
               pblow=sum(biomass>=196334)/length(biomass),
-              pzero=sum(catch<= 1e-6)/length(catch))
+              pzero=sum(catch<= 1e-6)/length(catch),
+              paboveFmsy = sum(f>=0.092)/length(f))
   aux$scenario <- rep(scenario,dim(aux)[1])
   successyr <- rbind(successyr, as.data.frame(aux))
 }

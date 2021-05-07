@@ -19,7 +19,7 @@ setwd(wd)
 # directory with results
 res.dir  <- file.path("./output_long")
 # directory with plots
-plot.dir <- file.path(res.dir,"plots")
+plot.dir <- file.path(res.dir,"plots/30yrs")
 
 # List of scenarios with 10000 iterations ---------------------------------
 
@@ -119,6 +119,10 @@ facet_names <- c('catch'= "Catch",'f'="Fbar",'rec'="Rec",'ssb'="B1+", 'HCR0'="IC
                  'HCR11'="ICES_low", 'HCR7'="HCR0" ,'HCR8'= "HCR40", 'HCR9'="HCR45", 'HCR13'="HCR35",'HCR14'="HCR30",
                  'REClow' = 'REClow', 'REClowmed'= 'REClowmed','RECmix'='RECmix', 'ASSnone'= 'ASSnone','ASSss3'='ASSss3' )
 
+#We don't want to include the ICES MSY AR with the old reference points
+
+out <- subset(out, Rule != c('HCR11'))
+
 # By REC
 
 for (rr in c("REClow","REClowmed")){
@@ -205,40 +209,44 @@ for (rr in c("REClow","REClowmed")){
 # Plots for catch, SSB, R and F -------------------------------------------
 
 for (rr in c("REClow","REClowmed")){
-  aux <- subset(out.boot, Rec==rr)
+  aux <- subset(out.boot, Rec==rr & Rule != 'HCR11')
   aux0 <- aux %>%
     group_by(scenario, Rule, Ass) %>% 
     summarise_at(c('catch','ssb','rec','f'), median,na.rm=T)
   
   ggplot(aux, aes(factor(size), ssb)) +
     geom_boxplot() +
-    facet_wrap(Rule~Ass, scales = "free_y",labeller = as_labeller(facet_names)) +
+    facet_grid(Ass~Rule, scales = "free_y",labeller = as_labeller(facet_names)) +
     geom_hline(data=aux0, aes(yintercept=ssb), lwd=1)+
     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
+    ylab("B1+")+
     scale_x_discrete(name = 'Sample size', breaks=scales::pretty_breaks(n = 8))
   ggsave(paste0(plot.dir,'/',rr,"_ssb.png"))
   
   ggplot(aux, aes(factor(size), catch)) +
     geom_boxplot() +
-    facet_wrap(Rule~Ass, scales = "free_y",labeller = as_labeller(facet_names)) +
+    facet_grid(Ass~Rule, scales = "free_y",labeller = as_labeller(facet_names)) +
     geom_hline(data=aux0, aes(yintercept=catch), lwd=1)+
     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
+    ylab("Catch")+
     scale_x_discrete(name = 'Sample size', breaks=scales::pretty_breaks(n = 8))
   ggsave(paste0(plot.dir,'/',rr,"_catch.png"))
   
   ggplot(aux, aes(factor(size), rec)) +
     geom_boxplot() +
-    facet_wrap(Rule~Ass, scales = "free_y",labeller = as_labeller(facet_names)) +
+    facet_grid(Ass~Rule, scales = "free_y",labeller = as_labeller(facet_names)) +
     geom_hline(data=aux0, aes(yintercept=rec), lwd=1)+
     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
+    ylab("Recruitment")+
     scale_x_discrete(name = 'Sample size', breaks=scales::pretty_breaks(n = 8))
   ggsave(paste0(plot.dir,'/',rr,"_rec.png"))
   
   ggplot(aux, aes(factor(size), f)) +
     geom_boxplot() +
-    facet_wrap(Rule~Ass, scales = "free_y",labeller = as_labeller(facet_names)) +
+    facet_grid(Ass~Rule, scales = "free_y",labeller = as_labeller(facet_names)) +
     geom_hline(data=aux0, aes(yintercept=f), lwd=1)+
     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
+    ylab("Fbar(2-5)")+
     scale_x_discrete(name = 'Sample size', breaks=scales::pretty_breaks(n = 8))
   ggsave(paste0(plot.dir,'/',rr,"_f.png"))
   
