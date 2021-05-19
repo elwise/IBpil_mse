@@ -110,7 +110,8 @@ out <- out.boot %>%
 out.med <- out %>% 
   filter(size==maxiter) %>% 
   group_by(risk, Ass, Rule, Rec) %>% 
-  summarise(med=median(value))
+  summarise(med=median(value))%>%
+  pivot_wider(id_cols=c(2:4),names_from='risk',values_from='med')
 
 
 # Plots for risk ----------------------------------------------------------

@@ -35,6 +35,7 @@ plot.dir <- file.path(res.dir,"plots")
 
 # load libraries
 library(ggplot2)
+library(latex2exp)
 
 theme_set(theme_bw())
 
@@ -166,6 +167,7 @@ r30_low <- subset(df, indicator == 'max_P_B1plus_Blow' & Ass=="ASSss3" &
                 !Rule %in% c("HCR0","HCR11") & period == 'med' & Rec=="REClow")
 r30_low$iters <- rep(1000,dim(r30_low)[1])
 
+r30_low <- rbind(r30_low, c('med','ASSss3_HCR8_REClow_INNvar_OERnaq','ASSss3', 'HCR8','REClow','INNvar','OERnaq','max_P_B1plus_Blow',0.0367,10000))
 r30_low <- rbind(r30_low, c('med','ASSss3_HCR9_REClow_INNvar_OERnaq','ASSss3', 'HCR9','REClow','INNvar','OERnaq','max_P_B1plus_Blow',0.0415,10000))
 r30_low <- rbind(r30_low, c('med','ASSss3_HCR10_REClow_INNvar_OERnaq','ASSss3', 'HCR10','REClow','INNvar','OERnaq','max_P_B1plus_Blow',0.0415,10000))
 
@@ -179,14 +181,38 @@ r50_mix$iters <- rep(1000,dim(r50_mix)[1])
 
 risk3 <- rbind(r30_low,r30_lowmed,r50_mix)
   
-ggplot(data=risk3,aes(x=Rule,y=as.numeric(value)))+
-  geom_point(aes(colour=cut(as.numeric(value)*100, breaks = c(-Inf,3,5,6,Inf)),shape=iters),size=2)+
-  facet_grid(.~Rec)+
-  geom_text(aes(label=round(as.numeric(value)*100,1)),show.legend=F, size=2,vjust=-1) +
+ggplot(data=r30_low,aes(x=Rule,y=as.numeric(value)))+
+  geom_point(aes(colour=cut(as.numeric(value)*100, breaks = c(-Inf,3,5,6,Inf)),shape=iters),size=4)+
+  #facet_grid(.~Rec)+
+  geom_text(aes(label=round(as.numeric(value)*100,1)),show.legend=F, size=5,vjust=-1) +
   scale_colour_manual(values = c( "#1A9641","#A6D96A" ,"#FDAE61","#D7191C" ),name='Risk3', drop = F, guide = "coloursteps")+
   theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
   scale_x_discrete(labels=c('HCR10'="HCR50",'HCR7'="HCR0" ,'HCR8'= "HCR40", 'HCR9'="HCR45", 'HCR13'="HCR35",'HCR14'="HCR30")) +
-  expand_limits(y = 0.2)+
-  scale_y_continuous(labels=scales::label_percent(),name="P(B1+ <= Blim)")
-ggsave(file.path(plot.dir,paste0("Risk3.png")),height = 6,width = 7)
+  expand_limits(y = 0.1)+
+  scale_y_continuous(labels=scales::label_percent())+
+  ylab(TeX('$P(B_{1+} <= B_{lim})$'))
+ggsave(file.path(plot.dir,paste0("Risk3_Advice.png")),height = 6,width = 7)
 
+r3 <- r30_low[-which(r30_low$iters==1000 & r30_low$Rule %in% c('HCR10','HCR9','HCR8')), ]
+
+ggplot(data=r3,aes(x=Rule,y=as.numeric(value)))+
+  geom_point(aes(colour=cut(as.numeric(value)*100, breaks = c(-Inf,3,5,6,Inf)),shape=iters),size=4)+
+  geom_text(aes(label=round(as.numeric(value)*100,1)),show.legend=F, size=5,vjust=-1) +
+  scale_colour_manual(values = c( "#1A9641","#A6D96A" ,"#FDAE61","#D7191C" ),name='Risk3', drop = F, guide = "coloursteps")+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
+  scale_x_discrete(labels=c('HCR10'="HCR50",'HCR7'="HCR0" ,'HCR8'= "HCR40", 'HCR9'="HCR45", 'HCR13'="HCR35",'HCR14'="HCR30")) +
+  expand_limits(y = 0.1)+
+  scale_y_continuous(labels=scales::label_percent())+
+  ylab(TeX('$P(B_{1+} <= B_{lim})$'))
+ggsave(file.path(plot.dir,paste0("Risk3_Advice_OptionA.png")),height = 6,width = 7)
+
+ggplot(data=r3,aes(x=Rule,y=as.numeric(value)))+
+  geom_point(aes(colour=cut(as.numeric(value)*100, breaks = c(-Inf,3,5,6,Inf))),size=4)+
+  geom_text(aes(label=round(as.numeric(value)*100,1)),show.legend=F, size=5,vjust=-1) +
+  scale_colour_manual(values = c( "#1A9641","#A6D96A" ,"#FDAE61","#D7191C" ),name='Risk3', drop = F, guide = "coloursteps")+
+  theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
+  scale_x_discrete(labels=c('HCR10'="HCR50",'HCR7'="HCR0" ,'HCR8'= "HCR40", 'HCR9'="HCR45", 'HCR13'="HCR35",'HCR14'="HCR30")) +
+  expand_limits(y = 0.1)+
+  scale_y_continuous(labels=scales::label_percent())+
+  ylab(TeX('$P(B_{1+} <= B_{lim})$'))
+ggsave(file.path(plot.dir,paste0("Risk3_Advice_OptionB.png")),height = 6,width = 7)
